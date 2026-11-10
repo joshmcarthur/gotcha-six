@@ -84,6 +84,8 @@ void service_usb_tx() {
 
 void service_ble_tx() {
   if (!Bluefruit.connected() || !bleuart.notifyEnabled()) {
+    // No listener: do not keep stale bytes for the next connection.
+    bridge.ble_fifo().clear();
     return;
   }
   BLEConnection* conn = Bluefruit.Connection(Bluefruit.connHandle());

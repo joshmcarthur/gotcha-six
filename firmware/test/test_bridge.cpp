@@ -94,6 +94,33 @@ void test_full_cmd_queue_drops_whole_line() {
   TEST_ASSERT_EQUAL('\n', prev);
 }
 
+void test_full_usb_fifo_drops_oldest() {
+  Bridge b;
+  for (size_t i = 0; i < gotcha::kUsbFifoSize; ++i) {
+    b.on_radar_byte('x');
+  }
+  b.on_radar_byte('Z');
+  TEST_ASSERT_EQUAL(gotcha::kUsbFifoSize, b.usb_fifo().count());
+  uint8_t byte = 0;
+  uint8_t last = 0;
+  while (b.usb_fifo().pop(byte)) {
+    last = byte;
+  }
+  TEST_ASSERT_EQUAL('Z', last);
+}
+
+void test_imu_inject_skips_usb_when_line_does_not_fit() {
+  Bridge b;
+  const size_t fill = gotcha::kUsbFifoSize - 5;
+  for (size_t i = 0; i < fill; ++i) {
+    TEST_ASSERT_TRUE(b.usb_fifo().push(static_cast<uint8_t>('x')));
+  }
+  const char* imu = "$GSIMU,0,0,9.8,0,0,0*\r\n";
+  (void)b.inject_host_line(reinterpret_cast<const uint8_t*>(imu), std::strlen(imu), false);
+  // No partial $GSIMU line in the FIFO.
+  TEST_ASSERT_EQUAL(fill, b.usb_fifo().count());
+}
+
 void test_imu_inject_skips_ble_when_high_water() {
   Bridge b;
   // Fill BLE above 75%.
@@ -134,6 +161,8 @@ int main(int argc, char** argv) {
   RUN_TEST(test_usb_before_ble_ordering);
   RUN_TEST(test_oversize_line_dropped);
   RUN_TEST(test_full_cmd_queue_drops_whole_line);
+  RUN_TEST(test_full_usb_fifo_drops_oldest);
+  RUN_TEST(test_imu_inject_skips_usb_when_line_does_not_fit);
   RUN_TEST(test_imu_inject_skips_ble_when_high_water);
   RUN_TEST(test_ble_make_room_prefers_gsimu);
   return UNITY_END();

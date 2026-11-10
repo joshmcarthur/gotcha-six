@@ -53,12 +53,13 @@ class Bridge {
 public:
   Bridge();
 
-  /// Radar UART RX byte: copy into USB and BLE FIFOs.
+  /// Radar UART RX byte: copy into USB and BLE FIFOs. A full FIFO drops its
+  /// oldest bytes.
   void on_radar_byte(uint8_t b);
 
-  /// Inject a complete line (already including trailing \n) into USB always,
-  /// and BLE only if ble_fifo fill is below high-water (75%).
-  /// Returns false if skipped for BLE (USB still received it).
+  /// Inject a complete line (already including trailing \n) into USB only if
+  /// the whole line fits, and BLE only if ble_fifo fill is below high-water
+  /// (75%). Returns false if skipped for BLE.
   bool inject_host_line(const uint8_t* data, size_t len, bool ble_ok);
 
   /// Host RX bytes (USB or BLE). Complete lines enqueue to cmd queue.
@@ -75,6 +76,8 @@ public:
   void ble_make_room(size_t need);
 
 private:
+  /// Drop oldest bytes until `need` bytes are free; a leading GSIMU line goes whole.
+  static void make_room(RingBuffer& fifo, size_t need);
   void feed_line(HostSource src, uint8_t b);
   void enqueue_line(const uint8_t* data, size_t len);
 

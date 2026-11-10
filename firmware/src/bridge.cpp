@@ -93,16 +93,20 @@ Bridge::Bridge()
       ble_discarding_(false) {}
 
 void Bridge::on_radar_byte(uint8_t b) {
-  (void)usb_.push(b);
+  if (!usb_.push(b)) {
+    make_room(usb_, 1);
+    (void)usb_.push(b);
+  }
   if (!ble_.push(b)) {
-    ble_make_room(1);
+    make_room(ble_, 1);
     (void)ble_.push(b);
   }
 }
 
 bool Bridge::inject_host_line(const uint8_t* data, size_t len, bool ble_ok) {
-  for (size_t i = 0; i < len; ++i) {
-    (void)usb_.push(data[i]);
+  // All or nothing: a partial line would join the next radar line.
+  if (usb_.free_space() >= len) {
+    (void)usb_.push(data, len);
   }
   if (!ble_ok) {
     return false;
@@ -129,17 +133,21 @@ bool Bridge::pop_cmd_byte(uint8_t& out) {
 }
 
 void Bridge::ble_make_room(size_t need) {
-  while (ble_.free_space() < need && !ble_.empty()) {
-    if (ble_.starts_with_gsimu()) {
+  make_room(ble_, need);
+}
+
+void Bridge::make_room(RingBuffer& fifo, size_t need) {
+  while (fifo.free_space() < need && !fifo.empty()) {
+    if (fifo.starts_with_gsimu()) {
       // Drop until end of line or buffer empty.
       uint8_t b;
-      while (ble_.pop(b)) {
+      while (fifo.pop(b)) {
         if (b == '\n') {
           break;
         }
       }
     } else {
-      (void)ble_.drop_oldest();
+      (void)fifo.drop_oldest();
     }
   }
 }
