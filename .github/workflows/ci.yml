@@ -68,3 +68,30 @@ jobs:
         run: pip install platformio
       - name: Native bridge tests
         run: pio test -d firmware -e native
+
+  firmware-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+          key: pio-xiao-${{ hashFiles('firmware/platformio.ini') }}
+      - name: Install PlatformIO
+        run: pip install platformio
+      - name: Build XIAO firmware
+        run: pio run -d firmware -e xiao
+      - name: Convert HEX to UF2
+        run: |
+          python ~/.platformio/packages/framework-arduinoadafruitnrf52-seeed/tools/uf2conv/uf2conv.py \
+            firmware/.pio/build/xiao/firmware.hex -c -f 0xADA52840 \
+            -o firmware/.pio/build/xiao/firmware.uf2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gotcha-six-firmware-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            firmware/.pio/build/xiao/firmware.uf2
+            firmware/.pio/build/xiao/firmware.zip
+            firmware/.pio/build/xiao/firmware.hex
