@@ -1,0 +1,19 @@
+{
+  "name": "gotcha-six-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build:wasm": "wasm-pack build ../core --target web --out-dir ../lab/src/wasm --out-name gotcha_six_core -- --features wasm",
+    "dev": "npm run build:wasm && vite",
+    "build": "npm run build:wasm && tsc --noEmit && vite build",
+    "test": "npm run build:wasm && vitest run",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^3.0.8"
+  }
+}
