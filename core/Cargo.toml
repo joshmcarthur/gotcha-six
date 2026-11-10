@@ -1,0 +1,24 @@
+[package]
+name = "gotcha-six-core"
+version = "0.1.0"
+edition = "2021"
+description = "C4001 radar and Gotcha Six IMU line parser, tracking, and motion interpretation"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2", optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+js-sys = { version = "0.3", optional = true }
+
+[features]
+default = []
+wasm = ["dep:wasm-bindgen", "dep:serde", "dep:serde-wasm-bindgen", "dep:js-sys"]
+
+[dev-dependencies]
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
