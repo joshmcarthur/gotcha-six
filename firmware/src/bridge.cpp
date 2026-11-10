@@ -177,11 +177,12 @@ void Bridge::enqueue_line(const uint8_t* data, size_t len) {
   // USB-first arbitration: if USB already has a pending complete command in
   // the queue, BLE still appends after it — callers drain host sources USB then
   // BLE each loop, so simultaneous completes enqueue USB first.
-  for (size_t i = 0; i < len; ++i) {
-    if (!cmd_.push(data[i])) {
-      return;
-    }
+  // Drop the whole line if it does not fit: a partial command without CRLF
+  // would join the next command on the radar UART.
+  if (cmd_.free_space() < len + 2) {
+    return;
   }
+  (void)cmd_.push(data, len);
   (void)cmd_.push(static_cast<uint8_t>('\r'));
   (void)cmd_.push(static_cast<uint8_t>('\n'));
 }

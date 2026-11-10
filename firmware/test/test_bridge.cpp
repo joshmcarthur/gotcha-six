@@ -73,6 +73,27 @@ void test_oversize_line_dropped() {
   TEST_ASSERT_FALSE(b.pop_cmd_byte(byte));
 }
 
+void test_full_cmd_queue_drops_whole_line() {
+  Bridge b;
+  // Six 100-byte lines need 612 bytes with CRLF; the queue holds 512.
+  const size_t line_len = 100;
+  for (int l = 0; l < 6; ++l) {
+    for (size_t i = 0; i < line_len; ++i) {
+      b.on_host_byte(HostSource::Usb, static_cast<uint8_t>('a' + l));
+    }
+    b.on_host_byte(HostSource::Usb, '\n');
+  }
+  size_t total = 0;
+  uint8_t prev = 0;
+  uint8_t byte = 0;
+  while (b.pop_cmd_byte(byte)) {
+    ++total;
+    prev = byte;
+  }
+  TEST_ASSERT_EQUAL(5 * (line_len + 2), total);
+  TEST_ASSERT_EQUAL('\n', prev);
+}
+
 void test_imu_inject_skips_ble_when_high_water() {
   Bridge b;
   // Fill BLE above 75%.
@@ -112,6 +133,7 @@ int main(int argc, char** argv) {
   RUN_TEST(test_usb_command_enqueues_crlf);
   RUN_TEST(test_usb_before_ble_ordering);
   RUN_TEST(test_oversize_line_dropped);
+  RUN_TEST(test_full_cmd_queue_drops_whole_line);
   RUN_TEST(test_imu_inject_skips_ble_when_high_water);
   RUN_TEST(test_ble_make_room_prefers_gsimu);
   return UNITY_END();
