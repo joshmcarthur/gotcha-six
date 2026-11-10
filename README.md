@@ -83,9 +83,18 @@ pio test -d firmware -e native
 
 Board: `xiaoblesense_adafruit` (Adafruit nRF52 / Bluefruit), via the maxgerhardt PlatformIO nordicnrf52 fork.
 
+Format check (needs `clang-format`):
+
+```bash
+find firmware/src firmware/test \( -name '*.cpp' -o -name '*.hpp' \) | xargs clang-format -i
+find firmware/src firmware/test \( -name '*.cpp' -o -name '*.hpp' \) | xargs clang-format --dry-run --Werror
+```
+
 ### Rust core
 
 ```bash
+cargo fmt --all
+cargo clippy --workspace --all-targets -- -D warnings
 cargo test
 ```
 
@@ -94,12 +103,24 @@ cargo test
 ```bash
 cd lab && npm ci
 npm run build:wasm
+npm run format
+npm run lint
 npm test
 npm run build
 npm run dev
 ```
 
 Live USB / BLE need Chromium (Web Serial / Web Bluetooth). Replay works without hardware.
+
+## Format and lint
+
+| Area | Tools |
+| --- | --- |
+| Rust | `rustfmt`, Clippy |
+| Lab | Biome (`format` / `lint`) |
+| Firmware | `clang-format` (LLVM-based style in `firmware/.clang-format`) |
+
+CI runs format/lint checks before tests.
 
 ## Definition of done (Milestone 1–3)
 
