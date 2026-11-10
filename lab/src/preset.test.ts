@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { encodeCommandLine, GOTCHA_SIX_PRESET } from "./preset";
+import { GOTCHA_SIX_PRESET, encodeCommandLine } from "./preset";
 
 describe("preset", () => {
   it("includes speed mode and range 25", () => {

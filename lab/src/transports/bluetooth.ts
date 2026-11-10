@@ -22,7 +22,11 @@ export class WebBluetoothTransport implements RadarTransport {
       filters: [{ namePrefix: "Gotcha Six" }, { services: [NUS_SERVICE] }],
       optionalServices: [NUS_SERVICE],
     });
-    const server = await this.device.gatt!.connect();
+    const gatt = this.device.gatt;
+    if (!gatt) {
+      throw new Error("BLE device has no GATT server");
+    }
+    const server = await gatt.connect();
     const service = await server.getPrimaryService(NUS_SERVICE);
     const txChar = await service.getCharacteristic(NUS_TX);
     this.rxChar = await service.getCharacteristic(NUS_RX);
@@ -56,6 +60,8 @@ export class WebBluetoothTransport implements RadarTransport {
     if (!value || !this.handler) {
       return;
     }
-    this.handler(new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength)));
+    this.handler(
+      new Uint8Array(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength)),
+    );
   };
 }

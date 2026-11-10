@@ -48,11 +48,12 @@ export class SessionRecorder {
   }
 
   toText(): string {
-    return this.samples.map((s) => `${s.t.toFixed(1)}\t${s.raw}`).join("\n") + "\n";
+    const body = this.samples.map((s) => `${s.t.toFixed(1)}\t${s.raw}`).join("\n");
+    return `${body}\n`;
   }
 
   toCsv(): string {
-    const header = "t_ms,kind,distance_m,speed_m_s,energy,motion,raw\n";
+    const header = "t_ms,kind,distance_m,speed_m_s,energy,motion,raw";
     const rows = this.samples.map((s) => {
       const raw = JSON.stringify(s.raw);
       return [
@@ -65,7 +66,7 @@ export class SessionRecorder {
         raw,
       ].join(",");
     });
-    return header + rows.join("\n") + "\n";
+    return `${[header, ...rows].join("\n")}\n`;
   }
 
   /** Flatten recorded raw chunks for replay through the engine. */

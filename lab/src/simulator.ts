@@ -7,8 +7,8 @@ export function* simulateApproach(steps = 20): Generator<Uint8Array> {
     const energy = 1000 + i * 50;
     yield enc.encode(`$DFDMD,1,1,${dist.toFixed(3)},${speed.toFixed(3)},${energy}, , *\r\n`);
     if (i % 3 === 0) {
-      yield enc.encode(`$GSIMU,0.0,0.1,9.8,0.01,0.0,-0.01*\r\n`);
+      yield enc.encode("$GSIMU,0.0,0.1,9.8,0.01,0.0,-0.01*\r\n");
     }
   }
-  yield enc.encode(`$DFDMD,0, , , , , , *\r\n`);
+  yield enc.encode("$DFDMD,0, , , , , , *\r\n");
 }

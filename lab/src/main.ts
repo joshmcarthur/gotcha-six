@@ -1,11 +1,11 @@
-import init, { WasmRadarEngine } from "./wasm/gotcha_six_core.js";
 import { DistanceChart } from "./chart";
 import { encodeCommandLine, sendPreset } from "./preset";
-import { downloadBlob, SessionRecorder } from "./session";
+import { SessionRecorder, downloadBlob } from "./session";
 import { simulateApproach } from "./simulator";
 import { WebBluetoothTransport } from "./transports/bluetooth";
 import { WebSerialTransport } from "./transports/serial";
 import type { RadarTransport } from "./transports/types";
+import init, { WasmRadarEngine } from "./wasm/gotcha_six_core.js";
 
 interface EngineOutput {
   kind: string;
@@ -31,29 +31,37 @@ function num(v: number | null | undefined): number | null {
   return typeof v === "number" ? v : null;
 }
 
+function requireEl<T extends HTMLElement>(id: string): T {
+  const node = document.getElementById(id);
+  if (!node) {
+    throw new Error(`missing element #${id}`);
+  }
+  return node as T;
+}
+
 const el = {
-  status: document.getElementById("conn-status")!,
-  log: document.getElementById("log")!,
-  distance: document.getElementById("v-distance")!,
-  speed: document.getElementById("v-speed")!,
-  energy: document.getElementById("v-energy")!,
-  motion: document.getElementById("v-motion")!,
-  closing: document.getElementById("v-closing")!,
-  accel: document.getElementById("v-accel")!,
-  gyro: document.getElementById("v-gyro")!,
-  cmd: document.getElementById("cmd-input") as HTMLInputElement,
-  btnUsb: document.getElementById("btn-usb") as HTMLButtonElement,
-  btnBle: document.getElementById("btn-ble") as HTMLButtonElement,
-  btnDisconnect: document.getElementById("btn-disconnect") as HTMLButtonElement,
-  btnSend: document.getElementById("btn-send") as HTMLButtonElement,
-  btnPreset: document.getElementById("btn-preset") as HTMLButtonElement,
-  btnRecord: document.getElementById("btn-record") as HTMLButtonElement,
-  btnStopRecord: document.getElementById("btn-stop-record") as HTMLButtonElement,
-  btnExportTxt: document.getElementById("btn-export-txt") as HTMLButtonElement,
-  btnExportCsv: document.getElementById("btn-export-csv") as HTMLButtonElement,
-  btnSim: document.getElementById("btn-sim") as HTMLButtonElement,
-  btnReplay: document.getElementById("btn-replay") as HTMLButtonElement,
-  chart: document.getElementById("chart") as HTMLCanvasElement,
+  status: requireEl("conn-status"),
+  log: requireEl("log"),
+  distance: requireEl("v-distance"),
+  speed: requireEl("v-speed"),
+  energy: requireEl("v-energy"),
+  motion: requireEl("v-motion"),
+  closing: requireEl("v-closing"),
+  accel: requireEl("v-accel"),
+  gyro: requireEl("v-gyro"),
+  cmd: requireEl<HTMLInputElement>("cmd-input"),
+  btnUsb: requireEl<HTMLButtonElement>("btn-usb"),
+  btnBle: requireEl<HTMLButtonElement>("btn-ble"),
+  btnDisconnect: requireEl<HTMLButtonElement>("btn-disconnect"),
+  btnSend: requireEl<HTMLButtonElement>("btn-send"),
+  btnPreset: requireEl<HTMLButtonElement>("btn-preset"),
+  btnRecord: requireEl<HTMLButtonElement>("btn-record"),
+  btnStopRecord: requireEl<HTMLButtonElement>("btn-stop-record"),
+  btnExportTxt: requireEl<HTMLButtonElement>("btn-export-txt"),
+  btnExportCsv: requireEl<HTMLButtonElement>("btn-export-csv"),
+  btnSim: requireEl<HTMLButtonElement>("btn-sim"),
+  btnReplay: requireEl<HTMLButtonElement>("btn-replay"),
+  chart: requireEl<HTMLCanvasElement>("chart"),
 };
 
 let transport: RadarTransport | null = null;

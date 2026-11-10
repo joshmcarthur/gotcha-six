@@ -16,7 +16,11 @@ export class DistanceChart {
   push(t: number, distance: number): void {
     this.points.push({ t, d: distance });
     const minT = t - this.windowMs;
-    while (this.points.length > 0 && this.points[0]!.t < minT) {
+    while (this.points.length > 0) {
+      const first = this.points[0];
+      if (!first || first.t >= minT) {
+        break;
+      }
       this.points.shift();
     }
     this.draw();
@@ -46,7 +50,11 @@ export class DistanceChart {
     if (this.points.length < 2) {
       return;
     }
-    const t1 = this.points[this.points.length - 1]!.t;
+    const last = this.points[this.points.length - 1];
+    if (!last) {
+      return;
+    }
+    const t1 = last.t;
     const t0 = t1 - this.windowMs;
 
     ctx.strokeStyle = "#3d9b6e";

@@ -8,9 +8,14 @@
     "dev": "npm run build:wasm && vite",
     "build": "npm run build:wasm && tsc --noEmit && vite build",
     "test": "npm run build:wasm && vitest run",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
     "vite-plugin-wasm": "^3.4.1",
