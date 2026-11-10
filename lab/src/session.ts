@@ -76,6 +76,26 @@ export class SessionRecorder {
   }
 }
 
+/**
+ * Parse a text recording. Each line is `<t_ms>\t<raw line>`, as `toText()`
+ * writes it. A line with no time prefix gets a time `stepMs` after the line
+ * before it, so plain protocol dumps and core fixtures also load.
+ */
+export function parseRecording(text: string, stepMs = 100): TimedLine[] {
+  const lines: TimedLine[] = [];
+  let nextT = 0;
+  for (const row of text.split(/\r?\n/)) {
+    if (row.trim() === "") {
+      continue;
+    }
+    const timed = /^(\d+(?:\.\d+)?)\t(.*)$/.exec(row);
+    const t = timed ? Number(timed[1]) : nextT;
+    lines.push({ t, line: timed ? (timed[2] ?? "") : row });
+    nextT = t + stepMs;
+  }
+  return lines;
+}
+
 export function downloadBlob(filename: string, content: string, type: string): void {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);

@@ -1,6 +1,6 @@
 import { DistanceChart } from "./chart";
 import { encodeCommandLine, sendPreset } from "./preset";
-import { SessionRecorder, type TimedLine, downloadBlob } from "./session";
+import { SessionRecorder, type TimedLine, downloadBlob, parseRecording } from "./session";
 import { simulateApproach } from "./simulator";
 import { WebBluetoothTransport } from "./transports/bluetooth";
 import { WebSerialTransport } from "./transports/serial";
@@ -61,6 +61,8 @@ const el = {
   btnExportCsv: requireEl<HTMLButtonElement>("btn-export-csv"),
   btnSim: requireEl<HTMLButtonElement>("btn-sim"),
   btnReplay: requireEl<HTMLButtonElement>("btn-replay"),
+  btnImport: requireEl<HTMLButtonElement>("btn-import"),
+  fileImport: requireEl<HTMLInputElement>("file-import"),
   chart: requireEl<HTMLCanvasElement>("chart"),
 };
 
@@ -240,6 +242,32 @@ el.btnSim.addEventListener("click", () => {
 
 el.btnReplay.addEventListener("click", () => {
   replay(lastReplay);
+});
+
+el.btnImport.addEventListener("click", () => {
+  el.fileImport.click();
+});
+
+el.fileImport.addEventListener("change", () => {
+  const file = el.fileImport.files?.[0];
+  // Clear the input so the same file can be imported again.
+  el.fileImport.value = "";
+  if (!file) {
+    return;
+  }
+  void file
+    .text()
+    .then((text) => {
+      const lines = parseRecording(text);
+      if (lines.length === 0) {
+        appendLog("unknown", `${file.name}: no lines found`);
+        return;
+      }
+      lastReplay = lines;
+      el.btnReplay.disabled = false;
+      replay(lines);
+    })
+    .catch((e: Error) => appendLog("unknown", e.message));
 });
 
 async function boot(): Promise<void> {

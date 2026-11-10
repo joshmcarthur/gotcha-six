@@ -121,6 +121,8 @@ npm run dev
 
 Live USB / BLE need Chromium (Web Serial / Web Bluetooth). Replay works without hardware.
 
+**Export text** writes one `<t_ms>\t<raw line>` row per line. **Import** loads that file and replays it. Import also accepts plain lines with no time, such as the fixtures in `core/tests/fixtures/`.
+
 ## Format and lint
 
 | Area | Tools |
