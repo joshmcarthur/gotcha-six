@@ -131,7 +131,7 @@ function handleOutputs(outputs: EngineOutput[], t: number): void {
       el.speed.textContent = speed == null ? "—" : `${speed.toFixed(3)} m/s`;
       el.energy.textContent = o.energy == null ? "—" : String(o.energy);
       el.motion.textContent = o.motion;
-      el.closing.textContent = closing == null ? "—" : closing.toFixed(3);
+      el.closing.textContent = closing == null ? "—" : `${closing.toFixed(3)} m/s`;
       if (distance != null) {
         chart.push(t, distance);
       }

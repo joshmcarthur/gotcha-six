@@ -31,6 +31,8 @@ pub struct RadarEngine {
 pub struct RadarOutput {
     pub event: RadarEvent,
     pub motion: Motion,
+    /// Metres per second. Positive when the target approaches, negative when
+    /// it recedes, zero when stationary. `None` when not known.
     pub closing_speed_m_s: Option<f32>,
 }
 

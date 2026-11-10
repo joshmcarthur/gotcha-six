@@ -71,7 +71,7 @@ sensorStart
 
 Wait ~3 s after power-up before configuring. Leave ~100 ms between commands. Confirm `$DFDMD` on hardware; if silent after `setRunApp 1`, check `setUartOutput`.
 
-UART speed is a magnitude (about 0.1–10 m/s), not a signed closing rate. Approaching / receding is derived from distance change over time in the Rust core.
+UART speed is a magnitude (about 0.1–10 m/s), not a signed closing rate. Approaching / receding is derived from distance change over time in the Rust core. Closing speed is that magnitude with the derived direction: positive when approaching, negative when receding, zero when stationary.
 
 ## IMU lines
 

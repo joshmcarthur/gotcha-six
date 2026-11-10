@@ -1,6 +1,7 @@
 //! Derive approaching / receding from distance change over successive updates.
 //!
-//! Does not use UART speed sign. Does not fuse IMU.
+//! Closing speed is the UART speed magnitude with the direction of the distance
+//! change. Does not use UART speed sign. Does not fuse IMU.
 
 use crate::tracking::TrackedTarget;
 
@@ -18,7 +19,7 @@ pub enum Motion {
     Unknown,
 }
 
-/// Closing-rate estimator from distance deltas.
+/// Motion and closing-speed estimator from distance deltas and radar speed.
 #[derive(Debug)]
 pub struct DetectionEngine {
     prev_distance_m: Option<f32>,
@@ -49,11 +50,11 @@ impl DetectionEngine {
 
     /// Observe a tracked target update.
     ///
-    /// Returns (motion, closing_speed_m_s). Closing speed is positive when
-    /// distance is decreasing (approaching). Units are metres per update, not
-    /// metres per second, unless the caller later divides by a known dt.
-    /// For this milestone we report the distance delta negated as a simple
-    /// closing indicator labelled `closing_speed_m_s` (delta-based).
+    /// Returns (motion, closing_speed_m_s). Closing speed is in metres per
+    /// second: the radar speed magnitude, positive when approaching, negative
+    /// when receding, and zero when stationary. The direction comes from the
+    /// distance change since the last update. It is `None` on the first
+    /// reading, when the target is lost, or when the radar gave no speed.
     pub fn observe(&mut self, tracked: &TrackedTarget) -> (Motion, Option<f32>) {
         if !tracked.present {
             let was = self.prev_present;
@@ -73,13 +74,13 @@ impl DetectionEngine {
 
         let result = if let Some(prev) = self.prev_distance_m {
             let delta = dist - prev; // positive => farther
-            let closing = -delta;
+            let speed = tracked.speed_m_s.map(f32::abs);
             if delta.abs() <= self.stationary_eps_m {
-                (Motion::Stationary, Some(closing))
+                (Motion::Stationary, speed.and(Some(0.0)))
             } else if delta < 0.0 {
-                (Motion::Approaching, Some(closing))
+                (Motion::Approaching, speed)
             } else {
-                (Motion::Receding, Some(closing))
+                (Motion::Receding, speed.map(|s| -s))
             }
         } else {
             (Motion::Unknown, None)
@@ -128,7 +129,7 @@ mod tests {
         let t2 = tracker.update(&target(8.0));
         let (m, closing) = det.observe(&t2);
         assert_eq!(m, Motion::Approaching);
-        assert!(closing.unwrap() > 0.0);
+        assert_eq!(closing, Some(0.5));
     }
 
     #[test]
@@ -138,7 +139,7 @@ mod tests {
         let _ = det.observe(&tracker.update(&target(5.0)));
         let (m, closing) = det.observe(&tracker.update(&target(7.0)));
         assert_eq!(m, Motion::Receding);
-        assert!(closing.unwrap() < 0.0);
+        assert_eq!(closing, Some(-0.5));
     }
 
     #[test]
@@ -146,8 +147,9 @@ mod tests {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
         let _ = det.observe(&tracker.update(&target(5.0)));
-        let (m, _) = det.observe(&tracker.update(&target(5.02)));
+        let (m, closing) = det.observe(&tracker.update(&target(5.02)));
         assert_eq!(m, Motion::Stationary);
+        assert_eq!(closing, Some(0.0));
     }
 
     #[test]
