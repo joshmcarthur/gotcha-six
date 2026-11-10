@@ -10,15 +10,15 @@
 
   <rect width="920" height="520" fill="#f3efe6"/>
   <rect x="24" y="24" width="872" height="472" rx="10" fill="#ebe4d6" stroke="#d2c8b4"/>
-  <text x="44" y="56" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2a2a2a">Gotcha Six  wiring</text>
-  <text x="44" y="78" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#666">Default: C4001 VIN = 3.3V ∑ UART 9600 8N1 ∑ IMU onboard (no external wires)</text>
+  <text x="44" y="56" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#2a2a2a">Gotcha Six - wiring</text>
+  <text x="44" y="78" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#666">Default: C4001 VIN = 3.3V | UART 9600 8N1 | IMU onboard (no external wires)</text>
 
   <!-- C4001 -->
   <g transform="translate(70,130)" filter="url(#shadow)">
     <rect width="160" height="190" rx="6" fill="#1f6f4a" stroke="#145239" stroke-width="2"/>
     <rect x="18" y="18" width="124" height="70" rx="3" fill="#0f3d28"/>
     <text x="80" y="48" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#d7ffe9">C4001</text>
-    <text x="80" y="68" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#9ad4b5">SEN0609 ∑ 24 GHz</text>
+    <text x="80" y="68" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#9ad4b5">SEN0609 | 24 GHz</text>
     <text x="80" y="108" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#cfeedd">beam rearward</text>
     <g transform="translate(28,140)">
       <g>
@@ -54,7 +54,7 @@
     <rect width="250" height="210" rx="8" fill="#2b2f36" stroke="#111" stroke-width="2"/>
     <rect x="20" y="24" width="210" height="54" rx="4" fill="#1a1d22"/>
     <text x="125" y="48" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#f0f2f5">XIAO nRF52840 Sense</text>
-    <text x="125" y="66" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#9aa3ad">LSM6DS3 onboard ∑ USB-C ∑ BLE</text>
+    <text x="125" y="66" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#9aa3ad">LSM6DS3 onboard | USB-C | BLE</text>
     <g transform="translate(18,100)">
       <text x="0" y="-8" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#9aa3ad">used pins</text>
       <g>
@@ -70,12 +70,12 @@
       <g transform="translate(0,56)">
         <rect x="0" y="0" width="18" height="18" rx="2" fill="#e6e1d6" stroke="#777"/>
         <circle cx="9" cy="9" r="3" fill="#222"/>
-        <text x="28" y="13" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#f5f5f5">D6 ∑ Serial1 TX</text>
+        <text x="28" y="13" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#f5f5f5">D6 | Serial1 TX</text>
       </g>
       <g transform="translate(0,84)">
         <rect x="0" y="0" width="18" height="18" rx="2" fill="#e6e1d6" stroke="#777"/>
         <circle cx="9" cy="9" r="3" fill="#222"/>
-        <text x="28" y="13" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#f5f5f5">D7 ∑ Serial1 RX</text>
+        <text x="28" y="13" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#f5f5f5">D7 | Serial1 RX</text>
       </g>
     </g>
     <rect x="95" y="198" width="60" height="18" rx="3" fill="#cfd3d8" stroke="#888"/>
@@ -100,13 +100,13 @@
   <g transform="translate(70,430)" font-family="Helvetica, Arial, sans-serif" font-size="12">
     <text x="0" y="0" font-weight="700" fill="#2a2a2a">Connections</text>
     <line x1="0" y1="14" x2="24" y2="14" stroke="#d62828" stroke-width="3.5"/>
-    <text x="32" y="18" fill="#333">C4001 VIN í XIAO 3V3</text>
+    <text x="32" y="18" fill="#333">C4001 VIN -&gt; XIAO 3V3</text>
     <line x1="220" y1="14" x2="244" y2="14" stroke="#1a1a1a" stroke-width="3.5"/>
-    <text x="252" y="18" fill="#333">GND í GND</text>
+    <text x="252" y="18" fill="#333">GND -&gt; GND</text>
     <line x1="380" y1="14" x2="404" y2="14" stroke="#2a9d4b" stroke-width="3.5"/>
-    <text x="412" y="18" fill="#333">C4001 TX í D7 (RX)</text>
+    <text x="412" y="18" fill="#333">C4001 TX -&gt; D7 (RX)</text>
     <line x1="580" y1="14" x2="604" y2="14" stroke="#f4a261" stroke-width="3.5"/>
-    <text x="612" y="18" fill="#333">C4001 RX ê D6 (TX)</text>
+    <text x="612" y="18" fill="#333">C4001 RX &lt;- D6 (TX)</text>
   </g>
 
   <text x="70" y="478" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#8a3b12">Warning: XIAO GPIO is not 5 V tolerant. Do not feed 5 V UART into D7. OUT unused.</text>
