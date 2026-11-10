@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gotcha Six Lab</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Gotcha Six</h1>
+        <p class="tagline">Rear-awareness lab</p>
+      </header>
+
+      <section class="controls" aria-label="Connection">
+        <div class="row">
+          <button type="button" id="btn-usb">Connect USB</button>
+          <button type="button" id="btn-ble">Connect BLE</button>
+          <button type="button" id="btn-disconnect" disabled>Disconnect</button>
+          <span id="conn-status" class="status">Disconnected</span>
+        </div>
+        <div class="row">
+          <input id="cmd-input" type="text" placeholder="sensorStop" autocomplete="off" />
+          <button type="button" id="btn-send" disabled>Send</button>
+          <button type="button" id="btn-preset" disabled>Gotcha Six preset</button>
+        </div>
+        <div class="row">
+          <button type="button" id="btn-record">Record</button>
+          <button type="button" id="btn-stop-record" disabled>Stop record</button>
+          <button type="button" id="btn-export-txt" disabled>Export text</button>
+          <button type="button" id="btn-export-csv" disabled>Export CSV</button>
+          <button type="button" id="btn-sim">Simulate approach</button>
+          <button type="button" id="btn-replay" disabled>Replay last</button>
+        </div>
+      </section>
+
+      <section class="panels">
+        <div class="panel">
+          <h2>Target</h2>
+          <dl id="target-panel">
+            <div><dt>Distance</dt><dd id="v-distance">—</dd></div>
+            <div><dt>Speed</dt><dd id="v-speed">—</dd></div>
+            <div><dt>Energy</dt><dd id="v-energy">—</dd></div>
+            <div><dt>Motion</dt><dd id="v-motion">—</dd></div>
+            <div><dt>Closing</dt><dd id="v-closing">—</dd></div>
+          </dl>
+        </div>
+        <div class="panel">
+          <h2>IMU</h2>
+          <dl id="imu-panel">
+            <div><dt>Accel</dt><dd id="v-accel">—</dd></div>
+            <div><dt>Gyro</dt><dd id="v-gyro">—</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="chart-wrap">
+        <h2>Distance vs time</h2>
+        <canvas id="chart" width="800" height="220"></canvas>
+      </section>
+
+      <section class="log-wrap">
+        <h2>Messages</h2>
+        <div id="log" class="log" role="log" aria-live="polite"></div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
