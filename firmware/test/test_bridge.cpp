@@ -97,7 +97,7 @@ void test_ble_make_room_prefers_gsimu() {
   for (const char* p = radar; *p; ++p) {
     TEST_ASSERT_TRUE(b.ble_fifo().push(static_cast<uint8_t>(*p)));
   }
-  b.ble_make_room(b.ble_fifo().capacity());  // force drops
+  b.ble_make_room(b.ble_fifo().capacity()); // force drops
   // After dropping GSIMU line, remaining should start with $DFHPD or be empty.
   if (!b.ble_fifo().empty()) {
     TEST_ASSERT_FALSE(b.ble_fifo().starts_with_gsimu());

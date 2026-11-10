@@ -10,7 +10,7 @@ gotcha::Bridge bridge;
 BLEUart bleuart;
 BLEDis bledis;
 
-constexpr uint32_t kImuPeriodMs = 40;  // 25 Hz
+constexpr uint32_t kImuPeriodMs = 40; // 25 Hz
 uint32_t last_imu_ms = 0;
 bool imu_ok = false;
 
@@ -73,9 +73,8 @@ void service_usb_tx() {
     if (space <= 0) {
       break;
     }
-    size_t n = bridge.usb_fifo().pop(buf, static_cast<size_t>(space) < sizeof(buf)
-                                               ? static_cast<size_t>(space)
-                                               : sizeof(buf));
+    size_t n = bridge.usb_fifo().pop(
+        buf, static_cast<size_t>(space) < sizeof(buf) ? static_cast<size_t>(space) : sizeof(buf));
     if (n == 0) {
       break;
     }
@@ -130,7 +129,7 @@ void maybe_imu_sample() {
   (void)bridge.inject_host_line(reinterpret_cast<const uint8_t*>(line), n, ble_ok);
 }
 
-}  // namespace
+} // namespace
 
 void setup() {
   Serial.begin(115200);
@@ -158,7 +157,7 @@ void setup() {
 
 void loop() {
   drain_radar_to_fifos();
-  drain_usb_host();   // USB first for command arbitration
+  drain_usb_host(); // USB first for command arbitration
   drain_ble_host();
   service_radar_tx();
   maybe_imu_sample();

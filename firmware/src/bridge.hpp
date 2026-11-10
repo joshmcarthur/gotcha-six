@@ -14,7 +14,7 @@ enum class HostSource : uint8_t { Usb = 0, Ble = 1 };
 
 /// Byte ring buffer. Drop policy is chosen by the caller.
 class RingBuffer {
- public:
+public:
   explicit RingBuffer(uint8_t* storage, size_t capacity);
 
   size_t capacity() const { return capacity_; }
@@ -40,7 +40,7 @@ class RingBuffer {
   /// True if the buffer starts with ASCII "$GSIMU" (for drop preference).
   bool starts_with_gsimu() const;
 
- private:
+private:
   uint8_t* storage_;
   size_t capacity_;
   size_t head_;
@@ -50,7 +50,7 @@ class RingBuffer {
 
 /// Dual-host line arbiter and fan-out state (no Arduino types).
 class Bridge {
- public:
+public:
   Bridge();
 
   /// Radar UART RX byte: copy into USB and BLE FIFOs.
@@ -74,7 +74,7 @@ class Bridge {
   /// When BLE is full, drop oldest BLE bytes preferentially if they begin a GSIMU line.
   void ble_make_room(size_t need);
 
- private:
+private:
   void feed_line(HostSource src, uint8_t b);
   void enqueue_line(const uint8_t* data, size_t len);
 
@@ -93,4 +93,4 @@ class Bridge {
   bool ble_discarding_;
 };
 
-}  // namespace gotcha
+} // namespace gotcha

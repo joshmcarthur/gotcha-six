@@ -7,7 +7,9 @@ namespace gotcha {
 RingBuffer::RingBuffer(uint8_t* storage, size_t capacity)
     : storage_(storage), capacity_(capacity), head_(0), tail_(0), count_(0) {}
 
-size_t RingBuffer::count() const { return count_; }
+size_t RingBuffer::count() const {
+  return count_;
+}
 
 bool RingBuffer::push(uint8_t b) {
   if (full()) {
@@ -86,12 +88,8 @@ bool RingBuffer::starts_with_gsimu() const {
 }
 
 Bridge::Bridge()
-    : usb_(usb_storage_, kUsbFifoSize),
-      ble_(ble_storage_, kBleFifoSize),
-      cmd_(cmd_storage_, kCmdQueueSize),
-      usb_line_len_(0),
-      usb_discarding_(false),
-      ble_line_len_(0),
+    : usb_(usb_storage_, kUsbFifoSize), ble_(ble_storage_, kBleFifoSize),
+      cmd_(cmd_storage_, kCmdQueueSize), usb_line_len_(0), usb_discarding_(false), ble_line_len_(0),
       ble_discarding_(false) {}
 
 void Bridge::on_radar_byte(uint8_t b) {
@@ -122,9 +120,13 @@ bool Bridge::inject_host_line(const uint8_t* data, size_t len, bool ble_ok) {
   return true;
 }
 
-void Bridge::on_host_byte(HostSource src, uint8_t b) { feed_line(src, b); }
+void Bridge::on_host_byte(HostSource src, uint8_t b) {
+  feed_line(src, b);
+}
 
-bool Bridge::pop_cmd_byte(uint8_t& out) { return cmd_.pop(out); }
+bool Bridge::pop_cmd_byte(uint8_t& out) {
+  return cmd_.pop(out);
+}
 
 void Bridge::ble_make_room(size_t need) {
   while (ble_.free_space() < need && !ble_.empty()) {
@@ -184,4 +186,4 @@ void Bridge::enqueue_line(const uint8_t* data, size_t len) {
   (void)cmd_.push(static_cast<uint8_t>('\n'));
 }
 
-}  // namespace gotcha
+} // namespace gotcha

@@ -16,7 +16,7 @@ bool ready = false;
 #define PIN_LSM6DS3TR_C_POWER 15
 #endif
 
-}  // namespace
+} // namespace
 
 bool imu_begin() {
   pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
@@ -44,13 +44,13 @@ size_t imu_format_sample(char* out, size_t out_cap) {
   imu.getEvent(&accel, &gyro, &temp);
 
   // Adafruit gives accel in m/s^2 and gyro in rad/s.
-  int n = snprintf(out, out_cap, "$GSIMU,%.3f,%.3f,%.3f,%.4f,%.4f,%.4f*\r\n",
-                   accel.acceleration.x, accel.acceleration.y, accel.acceleration.z,
-                   gyro.gyro.x, gyro.gyro.y, gyro.gyro.z);
+  int n =
+      snprintf(out, out_cap, "$GSIMU,%.3f,%.3f,%.3f,%.4f,%.4f,%.4f*\r\n", accel.acceleration.x,
+               accel.acceleration.y, accel.acceleration.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z);
   if (n <= 0 || static_cast<size_t>(n) >= out_cap) {
     return 0;
   }
   return static_cast<size_t>(n);
 }
 
-}  // namespace gotcha
+} // namespace gotcha
