@@ -57,6 +57,10 @@ public:
   /// oldest bytes.
   void on_radar_byte(uint8_t b);
 
+  /// True while a radar line is incomplete (last radar byte was not \n).
+  /// Do not inject a host line while this is true.
+  bool radar_mid_line() const { return radar_mid_line_; }
+
   /// Inject a complete line (already including trailing \n) into USB only if
   /// the whole line fits, and BLE only if ble_fifo fill is below high-water
   /// (75%). Returns false if skipped for BLE.
@@ -94,6 +98,7 @@ private:
   uint8_t ble_line_[kLineMax];
   size_t ble_line_len_;
   bool ble_discarding_;
+  bool radar_mid_line_;
 };
 
 } // namespace gotcha

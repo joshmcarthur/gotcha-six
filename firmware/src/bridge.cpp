@@ -90,9 +90,10 @@ bool RingBuffer::starts_with_gsimu() const {
 Bridge::Bridge()
     : usb_(usb_storage_, kUsbFifoSize), ble_(ble_storage_, kBleFifoSize),
       cmd_(cmd_storage_, kCmdQueueSize), usb_line_len_(0), usb_discarding_(false), ble_line_len_(0),
-      ble_discarding_(false) {}
+      ble_discarding_(false), radar_mid_line_(false) {}
 
 void Bridge::on_radar_byte(uint8_t b) {
+  radar_mid_line_ = (b != '\n');
   if (!usb_.push(b)) {
     make_room(usb_, 1);
     (void)usb_.push(b);

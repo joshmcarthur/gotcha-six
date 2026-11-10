@@ -11,6 +11,8 @@ BLEUart bleuart;
 BLEDis bledis;
 
 constexpr uint32_t kImuPeriodMs = 40; // 25 Hz
+// Longest wait for a radar line boundary before an IMU line goes out anyway.
+constexpr uint32_t kImuMaxHoldMs = 4 * kImuPeriodMs;
 uint32_t last_imu_ms = 0;
 bool imu_ok = false;
 
@@ -117,7 +119,13 @@ void maybe_imu_sample() {
     return;
   }
   const uint32_t now = millis();
-  if (now - last_imu_ms < kImuPeriodMs) {
+  const uint32_t elapsed = now - last_imu_ms;
+  if (elapsed < kImuPeriodMs) {
+    return;
+  }
+  // An IMU line inside a radar line corrupts both. Wait for the line end,
+  // unless the radar line has stalled.
+  if (bridge.radar_mid_line() && elapsed < kImuMaxHoldMs) {
     return;
   }
   last_imu_ms = now;

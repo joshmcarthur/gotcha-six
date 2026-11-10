@@ -121,6 +121,21 @@ void test_imu_inject_skips_usb_when_line_does_not_fit() {
   TEST_ASSERT_EQUAL(fill, b.usb_fifo().count());
 }
 
+void test_radar_mid_line_tracks_line_boundary() {
+  Bridge b;
+  TEST_ASSERT_FALSE(b.radar_mid_line());
+  for (const char* p = "$DFDMD,1,1,2."; *p; ++p) {
+    b.on_radar_byte(static_cast<uint8_t>(*p));
+  }
+  TEST_ASSERT_TRUE(b.radar_mid_line());
+  for (const char* p = "5,0.1,10, , *\r"; *p; ++p) {
+    b.on_radar_byte(static_cast<uint8_t>(*p));
+  }
+  TEST_ASSERT_TRUE(b.radar_mid_line());
+  b.on_radar_byte('\n');
+  TEST_ASSERT_FALSE(b.radar_mid_line());
+}
+
 void test_imu_inject_skips_ble_when_high_water() {
   Bridge b;
   // Fill BLE above 75%.
@@ -163,6 +178,7 @@ int main(int argc, char** argv) {
   RUN_TEST(test_full_cmd_queue_drops_whole_line);
   RUN_TEST(test_full_usb_fifo_drops_oldest);
   RUN_TEST(test_imu_inject_skips_usb_when_line_does_not_fit);
+  RUN_TEST(test_radar_mid_line_tracks_line_boundary);
   RUN_TEST(test_imu_inject_skips_ble_when_high_water);
   RUN_TEST(test_ble_make_room_prefers_gsimu);
   return UNITY_END();

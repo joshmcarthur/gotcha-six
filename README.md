@@ -43,6 +43,9 @@ Mount the radar facing rearward. Beam is about 100° × 40°. Put the wide axis 
 - Every radar UART byte is forwarded unmodified to USB and BLE.
 - Host commands from USB or BLE are forwarded to the radar as complete lines (`\n`). If both have a complete line, **USB wins**. Incomplete lines never interleave. Lines over 128 bytes without `\n` are dropped.
 - Firmware injects IMU samples as `$GSIMU,...*\r\n` on USB and BLE. Those lines are **not** sent to the radar UART.
+- An IMU line goes out only between radar lines. If a radar line stalls for 160 ms, the IMU line goes out anyway.
+- If a host command does not fit the 512-byte command queue, firmware drops the whole command.
+- A full USB or BLE buffer drops its oldest bytes. With no BLE host, firmware does not keep bytes for the next BLE connection.
 - If BLE backpressure is high, firmware prefers to drop IMU samples and keep radar bytes.
 
 BLE advertises as `Gotcha Six` with the standard NUS UUIDs.
