@@ -3,25 +3,13 @@
 use crate::protocol::Target;
 
 /// Last known target view used by detection.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct TrackedTarget {
     pub present: bool,
     pub distance_m: Option<f32>,
     pub speed_m_s: Option<f32>,
     pub energy: Option<u32>,
     pub id: Option<u8>,
-}
-
-impl Default for TrackedTarget {
-    fn default() -> Self {
-        Self {
-            present: false,
-            distance_m: None,
-            speed_m_s: None,
-            energy: None,
-            id: None,
-        }
-    }
 }
 
 /// Maintains one target slot (C4001 reports at most one).

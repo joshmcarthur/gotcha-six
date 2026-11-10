@@ -74,10 +74,7 @@ fn strip_star_suffix(s: &str) -> &str {
 }
 
 fn split_csv(s: &str) -> Vec<&str> {
-    strip_star_suffix(s)
-        .split(',')
-        .map(|p| p.trim())
-        .collect()
+    strip_star_suffix(s).split(',').map(|p| p.trim()).collect()
 }
 
 fn parse_optional_u8(s: &str) -> Option<u8> {
