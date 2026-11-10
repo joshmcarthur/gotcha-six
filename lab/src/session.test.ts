@@ -18,5 +18,6 @@ describe("SessionRecorder", () => {
     expect(csv.startsWith("t_ms,kind")).toBe(true);
     expect(csv).toContain("target");
     expect(csv).toContain("$DFDMD");
+    expect(r.timedLines().map((l) => l.line)).toEqual(["$DFDMD,1,1,1.0,0.1,10, , *"]);
   });
 });

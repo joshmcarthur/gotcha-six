@@ -8,10 +8,15 @@ export interface SessionSample {
   motion?: string;
 }
 
+/** One line of a recording, with its time in ms from the start. */
+export interface TimedLine {
+  t: number;
+  line: string;
+}
+
 export class SessionRecorder {
   private active = false;
   private samples: SessionSample[] = [];
-  private rawChunks: { t: number; bytes: Uint8Array }[] = [];
   private startedAt = 0;
 
   get isRecording(): boolean {
@@ -19,25 +24,17 @@ export class SessionRecorder {
   }
 
   get hasData(): boolean {
-    return this.samples.length > 0 || this.rawChunks.length > 0;
+    return this.samples.length > 0;
   }
 
   start(): void {
     this.active = true;
     this.samples = [];
-    this.rawChunks = [];
     this.startedAt = performance.now();
   }
 
   stop(): void {
     this.active = false;
-  }
-
-  recordBytes(data: Uint8Array): void {
-    if (!this.active) {
-      return;
-    }
-    this.rawChunks.push({ t: performance.now() - this.startedAt, bytes: data.slice() });
   }
 
   recordSample(sample: Omit<SessionSample, "t">): void {
@@ -69,21 +66,13 @@ export class SessionRecorder {
     return `${[header, ...rows].join("\n")}\n`;
   }
 
-  /** Flatten recorded raw chunks for replay through the engine. */
-  rawReplayBytes(): Uint8Array {
-    const total = this.rawChunks.reduce((n, c) => n + c.bytes.length, 0);
-    const out = new Uint8Array(total);
-    let off = 0;
-    for (const c of this.rawChunks) {
-      out.set(c.bytes, off);
-      off += c.bytes.length;
-    }
-    return out;
+  /** Recorded lines with their times, for replay through the engine. */
+  timedLines(): TimedLine[] {
+    return this.samples.map((s) => ({ t: s.t, line: s.raw }));
   }
 
   clear(): void {
     this.samples = [];
-    this.rawChunks = [];
   }
 }
 

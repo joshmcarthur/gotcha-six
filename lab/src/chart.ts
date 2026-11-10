@@ -1,8 +1,10 @@
+const LIVE_WINDOW_MS = 30_000;
+
 export class DistanceChart {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
   private points: { t: number; d: number }[] = [];
-  private windowMs = 30_000;
+  private windowMs = LIVE_WINDOW_MS;
 
   constructor(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -24,6 +26,11 @@ export class DistanceChart {
       this.points.shift();
     }
     this.draw();
+  }
+
+  /** Set the visible time span. The live window is the minimum. */
+  setWindow(ms: number): void {
+    this.windowMs = Math.max(LIVE_WINDOW_MS, ms);
   }
 
   clear(): void {

@@ -1,6 +1,6 @@
 import { DistanceChart } from "./chart";
 import { encodeCommandLine, sendPreset } from "./preset";
-import { SessionRecorder, downloadBlob } from "./session";
+import { SessionRecorder, type TimedLine, downloadBlob } from "./session";
 import { simulateApproach } from "./simulator";
 import { WebBluetoothTransport } from "./transports/bluetooth";
 import { WebSerialTransport } from "./transports/serial";
@@ -68,7 +68,8 @@ let transport: RadarTransport | null = null;
 let engine: WasmRadarEngine | null = null;
 const recorder = new SessionRecorder();
 const chart = new DistanceChart(el.chart);
-let lastRawReplay: Uint8Array | null = null;
+let lastReplay: TimedLine[] = [];
+const encoder = new TextEncoder();
 
 function setConnected(connected: boolean, label: string): void {
   el.status.textContent = label;
@@ -92,7 +93,7 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function handleOutputs(outputs: EngineOutput[]): void {
+function handleOutputs(outputs: EngineOutput[], t: number): void {
   for (const o of outputs) {
     const distance = num(o.distance_m ?? o.distanceM);
     const speed = num(o.speed_m_s ?? o.speedMS);
@@ -117,7 +118,7 @@ function handleOutputs(outputs: EngineOutput[]): void {
       el.motion.textContent = o.motion;
       el.closing.textContent = closing == null ? "—" : closing.toFixed(3);
       if (distance != null) {
-        chart.push(performance.now(), distance);
+        chart.push(t, distance);
       }
     } else if (o.kind === "presence") {
       el.motion.textContent = o.detected ? "present" : "absent";
@@ -129,12 +130,26 @@ function handleOutputs(outputs: EngineOutput[]): void {
 }
 
 function onData(data: Uint8Array): void {
-  recorder.recordBytes(data);
   if (!engine) {
     return;
   }
   const raw = engine.pushBytes(data) as EngineOutput[];
-  handleOutputs(raw);
+  handleOutputs(raw, performance.now());
+}
+
+/** Send timed lines through a fresh engine. The chart shows the full duration. */
+function replay(lines: TimedLine[]): void {
+  const first = lines[0];
+  const last = lines[lines.length - 1];
+  if (!engine || !first || !last) {
+    return;
+  }
+  engine.reset();
+  chart.clear();
+  chart.setWindow(last.t - first.t);
+  for (const { t, line } of lines) {
+    handleOutputs(engine.pushBytes(encoder.encode(`${line}\n`)) as EngineOutput[], t);
+  }
 }
 
 async function connectWith(factory: () => RadarTransport): Promise<void> {
@@ -144,6 +159,8 @@ async function connectWith(factory: () => RadarTransport): Promise<void> {
   const t = factory();
   t.onData(onData);
   await t.connect();
+  chart.clear();
+  chart.setWindow(0);
   transport = t;
   setConnected(true, `Connected (${t.name})`);
 }
@@ -201,12 +218,12 @@ el.btnRecord.addEventListener("click", () => {
 
 el.btnStopRecord.addEventListener("click", () => {
   recorder.stop();
-  lastRawReplay = recorder.rawReplayBytes();
+  lastReplay = recorder.timedLines();
   el.btnRecord.disabled = false;
   el.btnStopRecord.disabled = true;
   el.btnExportTxt.disabled = !recorder.hasData;
   el.btnExportCsv.disabled = !recorder.hasData;
-  el.btnReplay.disabled = !lastRawReplay || lastRawReplay.length === 0;
+  el.btnReplay.disabled = lastReplay.length === 0;
 });
 
 el.btnExportTxt.addEventListener("click", () => {
@@ -218,23 +235,11 @@ el.btnExportCsv.addEventListener("click", () => {
 });
 
 el.btnSim.addEventListener("click", () => {
-  if (!engine) {
-    return;
-  }
-  engine.reset();
-  chart.clear();
-  for (const chunk of simulateApproach()) {
-    handleOutputs(engine.pushBytes(chunk) as EngineOutput[]);
-  }
+  replay(simulateApproach());
 });
 
 el.btnReplay.addEventListener("click", () => {
-  if (!engine || !lastRawReplay) {
-    return;
-  }
-  engine.reset();
-  chart.clear();
-  handleOutputs(engine.pushBytes(lastRawReplay) as EngineOutput[]);
+  replay(lastReplay);
 });
 
 async function boot(): Promise<void> {
