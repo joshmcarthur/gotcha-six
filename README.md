@@ -20,12 +20,16 @@ The nRF52840 firmware is a transparent UART bridge plus an IMU feeder. Protocol 
 
 ## Wiring
 
+![C4001 to XIAO nRF52840 Sense wiring](docs/hardware/wiring.svg)
+
 | C4001 | XIAO |
 | --- | --- |
 | TX | D7 (Serial1 RX) |
 | RX | D6 (Serial1 TX) |
 | GND | GND |
 | VIN | **3.3V** |
+
+The pin table is the source of truth. The diagram is a visual copy of that table.
 
 XIAO GPIO is not 5 V tolerant. Do not feed 5 V UART into D7. The C4001 draws about 90 mA. If the 3.3 V rail browns out, power VIN from 5 V only after you measure TX at 3.3 V.
 

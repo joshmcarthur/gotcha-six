@@ -31,3 +31,4 @@ lab/dist/
 .env
 .env.*
 !.env.example
+.preview-wiring/
