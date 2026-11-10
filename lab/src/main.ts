@@ -83,12 +83,25 @@ function setConnected(connected: boolean, label: string): void {
   el.btnBle.disabled = connected;
 }
 
+const LOG_MAX_LINES = 500;
+let logScrollPending = false;
+
 function appendLog(kind: string, raw: string): void {
   const ts = new Date().toISOString().slice(11, 23);
   const line = document.createElement("div");
   line.innerHTML = `<span class="ts">${ts}</span> <span class="kind-${kind}">[${kind}]</span> ${escapeHtml(raw)}`;
   el.log.appendChild(line);
-  el.log.scrollTop = el.log.scrollHeight;
+  while (el.log.childElementCount > LOG_MAX_LINES) {
+    el.log.firstElementChild?.remove();
+  }
+  // A scroll after each line forces a layout each time. Scroll once per frame.
+  if (!logScrollPending) {
+    logScrollPending = true;
+    requestAnimationFrame(() => {
+      logScrollPending = false;
+      el.log.scrollTop = el.log.scrollHeight;
+    });
+  }
 }
 
 function escapeHtml(s: string): string {
