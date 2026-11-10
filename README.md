@@ -20,7 +20,9 @@ The nRF52840 firmware is a transparent UART bridge plus an IMU feeder. Protocol 
 
 ## Wiring
 
-![C4001 to XIAO nRF52840 Sense wiring](docs/hardware/wiring.svg)
+![C4001 to XIAO nRF52840 Sense wiring](docs/hardware/wiring.png)
+
+Editable source: [`docs/hardware/wiring.svg`](docs/hardware/wiring.svg).
 
 | C4001 | XIAO |
 | --- | --- |
