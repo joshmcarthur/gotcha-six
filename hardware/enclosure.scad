@@ -1,8 +1,8 @@
 // Gotcha Six wearable enclosure
 // C4001 mmWave + Seeed XIAO nRF52840 Sense + LiPo (A or B)
 //
-// part: "shell" | "back" | "clip" | "shim" | "all"
-// battery: "A" (500 mAh) | "B" (800 mAh) — affects shim only
+// part: "shell" | "back" | "clip" | "shim" | "xiao_shim" | "all"
+// battery: "A" (500 mAh) | "B" (800 mAh) — affects battery shim only
 //
 // Units: millimetres. Origin at the outer front face, centred on X/Y.
 
@@ -18,7 +18,10 @@ radar_w = 26.00;
 radar_h = 30.00;
 radar_z = 2.70;
 
+xiao_w = 18.05;
+xiao_h = 21.05;
 xiao_bay_z = 4.50;
+xiao_fit = 0.30;
 
 batt_a_l = 27.50;
 batt_a_z = 8.25;
@@ -40,8 +43,15 @@ wire_notch_w = 14.00;
 wire_notch_h = 2.50;
 wire_notch_d = 1.20;
 
-usb_slot_w = 9.20;
-usb_slot_h = 3.60;
+// USB-C receptacle shell is 8.94 x 3.26 mm, ~1.3 mm corner radii.
+// Cutout adds 0.25 mm print clearance on each axis.
+usb_shell_w = 8.94;
+usb_shell_h = 3.26;
+usb_shell_r = 1.30;
+usb_clear = 0.25;
+usb_slot_w = usb_shell_w + usb_clear;
+usb_slot_h = usb_shell_h + usb_clear;
+usb_slot_r = usb_shell_r + usb_clear / 2;
 
 snap_w = 4.00;
 snap_d = 1.20;
@@ -100,10 +110,12 @@ module shell() {
     ])
       cube([wire_notch_w, wire_notch_h + wall, wire_notch_d + radar_z], center = true);
 
-    // USB-C slot on bottom wall through the XIAO bay
+    // USB-C stadium cutout on bottom wall through the XIAO bay
     usb_z_mid = window_t + radar_z + xiao_bay_z / 2;
     translate([0, -outer_h / 2 + wall / 2, usb_z_mid])
-      cube([usb_slot_w, wall + 0.2, usb_slot_h], center = true);
+      rotate([90, 0, 0])
+        linear_extrude(height = wall + 0.2, center = true)
+          rounded_rect([usb_slot_w, usb_slot_h], usb_slot_r);
 
     // Snap seats on the open end
     for (sx = [-1, 1])
@@ -225,16 +237,46 @@ module shim() {
     assert(false, "battery must be \"A\" or \"B\"");
 }
 
+module xiao_shim() {
+  // Frame fills the radar footprint; pocket holds the smaller XIAO.
+  // USB edge is toward -Y to match the shell cutout.
+  ow = radar_w + fit - 0.20;
+  oh = radar_h + fit - 0.20;
+  pocket_w = xiao_w + xiao_fit;
+  pocket_h = xiao_h + xiao_fit;
+
+  difference() {
+    linear_extrude(height = xiao_bay_z)
+      rounded_rect([ow, oh], 1.0);
+
+    translate([0, -oh / 2 + pocket_h / 2, -0.01])
+      linear_extrude(height = xiao_bay_z + 0.02)
+        rounded_rect([pocket_w, pocket_h], 0.6);
+
+    // Open the USB edge through the frame
+    translate([0, -oh / 2, xiao_bay_z / 2])
+      cube([usb_slot_w + 0.6, 3.0, xiao_bay_z + 0.1], center = true);
+  }
+}
+
 module plate_all() {
-  translate([-outer_w / 2 - 8, 0, 0])
+  // Two rows with a fixed gap so parts do not share volume in the preview.
+  gap = 12;
+  row_top_y = outer_h / 2 + gap;
+  row_bot_y = -(outer_h / 2 + gap + 22);
+
+  translate([-(outer_w / 2 + gap / 2), row_top_y, 0])
     shell();
-  translate([outer_w / 2 + 8, 0, back_plate_t])
+  translate([outer_w / 2 + gap / 2, row_top_y, back_plate_t])
     rotate([180, 0, 0])
       back();
-  translate([0, outer_h / 2 + 14, 0])
+
+  translate([-(batt_bay_l / 2 + gap + 12), row_bot_y, 0])
     clip();
-  translate([0, -outer_h / 2 - 14, 0])
+  translate([0, row_bot_y, 0])
     shim();
+  translate([batt_bay_l / 2 + gap + 10, row_bot_y, 0])
+    xiao_shim();
 }
 
 if (part == "shell")
@@ -246,10 +288,12 @@ else if (part == "clip")
   clip();
 else if (part == "shim")
   shim();
+else if (part == "xiao_shim")
+  xiao_shim();
 else if (part == "all")
   plate_all();
 else
-  assert(false, "part must be shell|back|clip|shim|all");
+  assert(false, "part must be shell|back|clip|shim|xiao_shim|all");
 
 echo(str("outer_w=", outer_w));
 echo(str("outer_h=", outer_h));
@@ -258,6 +302,8 @@ echo(str("inner_w=", inner_w));
 echo(str("inner_h=", inner_h));
 echo(str("cavity_z=", cavity_z));
 echo(str("batt_bay=", batt_bay_l, "x", batt_bay_w, "x", batt_bay_z));
-echo(str("usb_slot=", usb_slot_w, "x", usb_slot_h));
+echo(str("usb_slot=", usb_slot_w, "x", usb_slot_h, " r=", usb_slot_r));
+echo(str("xiao_shim_outer=", radar_w + fit - 0.20, "x", radar_h + fit - 0.20));
+echo(str("xiao_shim_pocket=", xiao_w + xiao_fit, "x", xiao_h + xiao_fit, "x", xiao_bay_z));
 echo(str("shim_A_end=", batt_bay_l - batt_a_l, " pad_z=", batt_bay_z - batt_a_z));
 echo(str("shim_B_bar=", batt_bay_w - batt_b_short));
