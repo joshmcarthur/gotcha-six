@@ -13,10 +13,13 @@ wasm-bindgen = { version = "0.2", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 serde-wasm-bindgen = { version = "0.6", optional = true }
 js-sys = { version = "0.3", optional = true }
+uniffi = { version = "0.29", optional = true }
 
 [features]
 default = []
+# Do not enable `wasm` and `uniffi` in the same build (separate bindgen stacks).
 wasm = ["dep:wasm-bindgen", "dep:serde", "dep:serde-wasm-bindgen", "dep:js-sys"]
+uniffi = ["dep:uniffi"]
 
 [dev-dependencies]
 
