@@ -2,7 +2,26 @@
 
 use wasm_bindgen::prelude::*;
 
+use crate::preset::{self, GOTCHA_SIX_PRESET, PRESET_GAP_MS};
 use crate::{Motion, RadarEngine, RadarEvent, RadarOutput};
+
+/// Ordered Gotcha Six host commands from core (single source list).
+#[wasm_bindgen(js_name = radarPresetCommands)]
+pub fn radar_preset_commands() -> Vec<String> {
+    GOTCHA_SIX_PRESET.iter().map(|s| (*s).to_string()).collect()
+}
+
+/// Inter-command gap in milliseconds.
+#[wasm_bindgen(js_name = presetGapMs)]
+pub fn preset_gap_ms() -> u32 {
+    PRESET_GAP_MS as u32
+}
+
+/// Encode a host command with trailing CRLF.
+#[wasm_bindgen(js_name = encodeCommandLine)]
+pub fn encode_command_line(cmd: &str) -> Vec<u8> {
+    preset::encode_command_line(cmd)
+}
 
 #[wasm_bindgen]
 pub struct WasmRadarEngine {
