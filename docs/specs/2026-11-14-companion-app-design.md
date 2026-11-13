@@ -6,6 +6,11 @@
 **Status:** Proposed  
 **Repo:** [joshmcarthur/gotcha-six](https://github.com/joshmcarthur/gotcha-six)
 
+## Related documents
+
+- [Handoff for a new conversation](2026-11-14-companion-app-handoff.md)
+- [Implementation plan](2026-11-14-companion-app-plan.md)
+
 ## Objective
 
 Give a Gotcha Six wearer a small iPhone app that pairs over BLE, teaches what an approaching alert feels like, then stays out of the way as a Live Activity and an interrupt while they run or ride.
