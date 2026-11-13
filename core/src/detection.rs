@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 /// Motion relative to the wearer (rear target).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "wasm", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 pub enum Motion {
     Approaching,
     Receding,
