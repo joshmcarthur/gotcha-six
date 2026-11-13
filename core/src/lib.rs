@@ -12,7 +12,7 @@ mod preset;
 mod protocol;
 mod tracking;
 
-pub use alert_gate::{AlertGate, OutputKind};
+pub use alert_gate::{AlertGate, OutputKind, DEFAULT_MIN_ALERT_INTERVAL_MS, DEFAULT_MIN_CLOSER_M};
 pub use detection::{DetectionEngine, Motion};
 pub use parser::RadarParser;
 pub use preset::{encode_command_line, GOTCHA_SIX_PRESET, PRESET_GAP_MS};

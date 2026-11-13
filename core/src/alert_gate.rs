@@ -11,23 +11,64 @@ pub enum OutputKind {
     Unknown,
 }
 
-const MIN_ALERT_INTERVAL_MS: u64 = 2000;
-const MIN_CLOSER_M: f32 = 1.0;
+/// Default minimum time between repeat alerts in the same close (ms).
+pub const DEFAULT_MIN_ALERT_INTERVAL_MS: u64 = 2000;
+/// Default minimum distance drop since the last alert before repeating (m).
+pub const DEFAULT_MIN_CLOSER_M: f32 = 1.0;
 
 /// Decides whether a session observation should fire an approaching alert.
 ///
 /// Callers inject `now_ms` so the gate is deterministic on Linux CI.
-#[derive(Debug, Default)]
+/// Repeat-alert thresholds are configurable; [`AlertGate::new`] uses the
+/// defaults above.
+#[derive(Debug)]
 pub struct AlertGate {
     session_on: bool,
     in_close: bool,
     last_alert_at_ms: Option<u64>,
     last_alert_distance_m: Option<f32>,
+    min_alert_interval_ms: u64,
+    min_closer_m: f32,
+}
+
+impl Default for AlertGate {
+    fn default() -> Self {
+        Self {
+            session_on: false,
+            in_close: false,
+            last_alert_at_ms: None,
+            last_alert_distance_m: None,
+            min_alert_interval_ms: DEFAULT_MIN_ALERT_INTERVAL_MS,
+            min_closer_m: DEFAULT_MIN_CLOSER_M,
+        }
+    }
 }
 
 impl AlertGate {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Build a gate with custom repeat-alert thresholds.
+    pub fn with_thresholds(min_alert_interval_ms: u64, min_closer_m: f32) -> Self {
+        Self {
+            min_alert_interval_ms,
+            min_closer_m,
+            ..Self::default()
+        }
+    }
+
+    pub fn set_thresholds(&mut self, min_alert_interval_ms: u64, min_closer_m: f32) {
+        self.min_alert_interval_ms = min_alert_interval_ms;
+        self.min_closer_m = min_closer_m;
+    }
+
+    pub fn min_alert_interval_ms(&self) -> u64 {
+        self.min_alert_interval_ms
+    }
+
+    pub fn min_closer_m(&self) -> f32 {
+        self.min_closer_m
     }
 
     pub fn set_session_on(&mut self, on: bool) {
@@ -84,7 +125,7 @@ impl AlertGate {
 
         let elapsed = now_ms.saturating_sub(last_at);
         let closer = last_dist - distance_m;
-        if elapsed >= MIN_ALERT_INTERVAL_MS && closer >= MIN_CLOSER_M {
+        if elapsed >= self.min_alert_interval_ms && closer >= self.min_closer_m {
             self.last_alert_at_ms = Some(now_ms);
             self.last_alert_distance_m = Some(distance_m);
             return true;
@@ -187,5 +228,31 @@ mod tests {
         assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
         assert!(!gate.observe(OutputKind::Target, Motion::Approaching, None, 100));
         assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(11.0), 200));
+    }
+
+    #[test]
+    fn custom_thresholds_control_repeat_alerts() {
+        let mut gate = AlertGate::with_thresholds(500, 0.5);
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        // Under default 2s/1m this would not fire; with 500ms/0.5m it should.
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(11.4), 500));
+    }
+
+    #[test]
+    fn set_thresholds_updates_live_gate() {
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Target, Motion::Approaching, Some(11.4), 500));
+        gate.set_thresholds(500, 0.5);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(10.8), 1000));
+    }
+
+    #[test]
+    fn default_thresholds_match_spec() {
+        let gate = AlertGate::new();
+        assert_eq!(gate.min_alert_interval_ms(), DEFAULT_MIN_ALERT_INTERVAL_MS);
+        assert_eq!(gate.min_closer_m(), DEFAULT_MIN_CLOSER_M);
     }
 }
