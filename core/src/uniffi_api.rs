@@ -67,6 +67,31 @@ impl UniffiAlertGate {
         }
     }
 
+    #[uniffi::constructor]
+    pub fn with_thresholds(min_alert_interval_ms: u64, min_closer_m: f32) -> Self {
+        Self {
+            inner: Mutex::new(AlertGate::with_thresholds(
+                min_alert_interval_ms,
+                min_closer_m,
+            )),
+        }
+    }
+
+    pub fn set_thresholds(&self, min_alert_interval_ms: u64, min_closer_m: f32) {
+        let mut gate = self.inner.lock().unwrap_or_else(|e| e.into_inner());
+        gate.set_thresholds(min_alert_interval_ms, min_closer_m);
+    }
+
+    pub fn min_alert_interval_ms(&self) -> u64 {
+        let gate = self.inner.lock().unwrap_or_else(|e| e.into_inner());
+        gate.min_alert_interval_ms()
+    }
+
+    pub fn min_closer_m(&self) -> f32 {
+        let gate = self.inner.lock().unwrap_or_else(|e| e.into_inner());
+        gate.min_closer_m()
+    }
+
     pub fn set_session_on(&self, on: bool) {
         let mut gate = self.inner.lock().unwrap_or_else(|e| e.into_inner());
         gate.set_session_on(on);
@@ -203,5 +228,15 @@ mod tests {
         assert!(!gate.observe(OutputKind::Target, Motion::Approaching, Some(10.0), 0));
         gate.set_session_on(true);
         assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(10.0), 1));
+    }
+
+    #[test]
+    fn alert_gate_wrapper_forwards_thresholds() {
+        let gate = UniffiAlertGate::with_thresholds(500, 0.5);
+        assert_eq!(gate.min_alert_interval_ms(), 500);
+        assert_eq!(gate.min_closer_m(), 0.5);
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(11.4), 500));
     }
 }
