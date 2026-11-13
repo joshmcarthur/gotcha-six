@@ -5,13 +5,17 @@
 
 #![cfg_attr(not(test), deny(clippy::unwrap_used))]
 
+mod alert_gate;
 mod detection;
 mod parser;
+mod preset;
 mod protocol;
 mod tracking;
 
+pub use alert_gate::{AlertGate, OutputKind};
 pub use detection::{DetectionEngine, Motion};
 pub use parser::RadarParser;
+pub use preset::{encode_command_line, GOTCHA_SIX_PRESET, PRESET_GAP_MS};
 pub use protocol::{ImuSample, Presence, RadarEvent, Target};
 pub use tracking::{TrackedTarget, Tracker};
 
