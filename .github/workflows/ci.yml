@@ -17,10 +17,11 @@ jobs:
           components: rustfmt, clippy
       - name: Format
         run: cargo fmt --all -- --check
+      # Always-on core is covered here too; uniffi only adds the FFI surface.
       - name: Clippy
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets --features uniffi -- -D warnings
       - name: Test
-        run: cargo test --workspace
+        run: cargo test --workspace --features uniffi
 
   lab:
     runs-on: ubuntu-latest

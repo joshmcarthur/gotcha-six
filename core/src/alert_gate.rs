@@ -4,6 +4,7 @@ use crate::detection::Motion;
 
 /// Kind of engine output, for alert policy (IMU/presence never fire).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 pub enum OutputKind {
     Presence,
     Target,
