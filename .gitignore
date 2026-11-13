@@ -32,3 +32,10 @@ lab/dist/
 .env.*
 !.env.example
 .preview-wiring/
+
+# Xcode
+**/xcuserdata/
+**/DerivedData/
+
+# UniFFI Swift/header output (regenerate with ios/generate-bindings.sh)
+/ios/GotchaSixCore/Generated/
