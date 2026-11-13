@@ -5,6 +5,12 @@
 
 #![cfg_attr(not(test), deny(clippy::unwrap_used))]
 
+#[cfg(all(feature = "wasm", feature = "uniffi"))]
+compile_error!("features `wasm` and `uniffi` cannot be enabled together");
+
+#[cfg(feature = "uniffi")]
+uniffi::setup_scaffolding!();
+
 mod alert_gate;
 mod detection;
 mod parser;
@@ -21,6 +27,9 @@ pub use tracking::{TrackedTarget, Tracker};
 
 #[cfg(feature = "wasm")]
 mod wasm;
+
+#[cfg(feature = "uniffi")]
+mod uniffi_api;
 
 /// Combined parser + tracker + detector.
 #[derive(Debug, Default)]
