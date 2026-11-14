@@ -32,3 +32,14 @@ lab/dist/
 .env.*
 !.env.example
 .preview-wiring/
+
+# Xcode
+**/xcuserdata/
+**/DerivedData/
+
+# UniFFI Swift/header output + copied staticlib (Xcode Run Script)
+/ios/GotchaSixCore/Generated/
+/ios/GotchaSixCore/lib/*.a
+
+# Local simulator evidence (attached on the PR, not committed)
+/artifacts/
