@@ -12,7 +12,10 @@ struct HomeView: View {
                 Text("Not connected")
                     .font(.title3)
                     .foregroundStyle(.secondary)
-                Text("Pairing and sessions arrive in later slices. Replay the how-to anytime from the menu.")
+                Text(calibrationCopy)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                Text("Pairing and live sessions arrive next. Until then, replay the how-to or play demo radar fixtures.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -25,9 +28,23 @@ struct HomeView: View {
                         Button("Replay how-to") {
                             onboarding.replayHowTo()
                         }
+                        Button("Play demo") {
+                            onboarding.openDemoPicker()
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private var calibrationCopy: String {
+        switch onboarding.calibrationStatus {
+        case .incomplete:
+            return "Calibration not done yet."
+        case .demoPassed:
+            return "Demo calibration passed."
+        case .skipped:
+            return "Calibration skipped — connect a unit later to prove the radar."
         }
     }
 }
