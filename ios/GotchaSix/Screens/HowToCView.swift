@@ -8,17 +8,9 @@ struct HowToCView: View {
             Spacer(minLength: 24)
             Text("Phone in pocket")
                 .font(.largeTitle.weight(.bold))
-            Text("During a session the phone stays in a pocket. Glance the Live Activity on the lock screen when you need it.")
+            Text("In a session the phone stays put. Glance the Live Activity when you need distance and motion.")
                 .font(.body)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.secondary.opacity(0.12))
-                .frame(maxWidth: .infinity)
-                .frame(height: 180)
-                .overlay {
-                    Text("Illustration")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+            TeachingImage(name: "TeachingHowToC")
             Spacer()
             Button("Next") {
                 onboarding.continueHowTo(from: .howToC)

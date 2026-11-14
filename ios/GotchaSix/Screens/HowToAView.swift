@@ -8,17 +8,9 @@ struct HowToAView: View {
             Spacer(minLength: 24)
             Text("What it watches")
                 .font(.largeTitle.weight(.bold))
-            Text("The radar faces backward. It tracks one target: distance and whether that target is approaching or receding.")
+            Text("The radar faces backward. One target: how far, and whether it is approaching or receding.")
                 .font(.body)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.secondary.opacity(0.12))
-                .frame(maxWidth: .infinity)
-                .frame(height: 180)
-                .overlay {
-                    Text("Illustration")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+            TeachingImage(name: "TeachingHowToA")
             Spacer()
             Button("Next") {
                 onboarding.continueHowTo(from: .howToA)

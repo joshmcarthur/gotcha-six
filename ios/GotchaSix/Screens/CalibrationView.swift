@@ -15,8 +15,7 @@ struct CalibrationView: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
 
-            CalibrationIllustration()
-                .frame(maxWidth: .infinity)
+            TeachingImage(name: "TeachingCalibration")
                 .frame(height: 160)
 
             readout
