@@ -12,7 +12,7 @@ struct PermissionsView: View {
             Spacer(minLength: 24)
             Text("Permissions")
                 .font(.largeTitle.weight(.bold))
-            Text("Bluetooth finds your Gotcha Six. Notifications deliver approaching alerts when the phone is locked.")
+            Text("Bluetooth finds your unit. Notifications deliver approaching alerts when the phone is locked. You can continue the tour without a device.")
                 .font(.body)
                 .foregroundStyle(.secondary)
 

@@ -8,17 +8,31 @@ enum AppRoute: Hashable {
     case howToB
     case howToC
     case findDevice
+    case demoSetup
+    case calibration
     case home
+}
+
+enum CalibrationStatus: String {
+    case incomplete
+    case demoPassed
+    case skipped
 }
 
 @MainActor
 final class OnboardingStore: ObservableObject {
     private static let completedKey = "gotchaSix.firstRunCompleted"
+    private static let calibrationKey = "gotchaSix.calibrationStatus"
 
     @Published var route: AppRoute
     @Published var replayingHowTo = false
+    @Published var calibrationStatus: CalibrationStatus
+    @Published var showDemoPicker = false
 
     init() {
+        let raw = UserDefaults.standard.string(forKey: Self.calibrationKey) ?? CalibrationStatus.incomplete.rawValue
+        calibrationStatus = CalibrationStatus(rawValue: raw) ?? .incomplete
+
         #if DEBUG
         if let forced = Self.routeFromLaunchArguments() {
             route = forced
@@ -42,6 +56,8 @@ final class OnboardingStore: ObservableObject {
         case "howToB": return .howToB
         case "howToC": return .howToC
         case "findDevice": return .findDevice
+        case "demoSetup": return .demoSetup
+        case "calibration": return .calibration
         case "home": return .home
         default: return nil
         }
@@ -74,13 +90,45 @@ final class OnboardingStore: ObservableObject {
         }
     }
 
-    func finishFindDevice() {
-        UserDefaults.standard.set(true, forKey: Self.completedKey)
-        route = .home
+    func continueWithoutDevice() {
+        setCalibration(.skipped)
+        finishOnboardingToHome()
+    }
+
+    func startDemoDevice() {
+        route = .demoSetup
+    }
+
+    func continueFromDemoSetup() {
+        route = .calibration
+    }
+
+    func completeDemoCalibration(passed: Bool) {
+        setCalibration(passed ? .demoPassed : .skipped)
+        finishOnboardingToHome()
+    }
+
+    func skipCalibration() {
+        setCalibration(.skipped)
+        finishOnboardingToHome()
     }
 
     func replayHowTo() {
         replayingHowTo = true
         route = .howToA
+    }
+
+    func openDemoPicker() {
+        showDemoPicker = true
+    }
+
+    private func finishOnboardingToHome() {
+        UserDefaults.standard.set(true, forKey: Self.completedKey)
+        route = .home
+    }
+
+    private func setCalibration(_ status: CalibrationStatus) {
+        calibrationStatus = status
+        UserDefaults.standard.set(status.rawValue, forKey: Self.calibrationKey)
     }
 }
