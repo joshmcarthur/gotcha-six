@@ -221,14 +221,22 @@ final class SessionController: ObservableObject {
             generator.notificationOccurred(.warning)
         }
 
-        await postTimeSensitive(title: "Gotcha Six", body: body)
+        await postTimeSensitive(
+            title: "Gotcha Six",
+            body: body,
+            identifier: "gotcha-six-approaching"
+        )
     }
 
     private func notifyLinkDrop() async {
-        await postTimeSensitive(title: "Gotcha Six", body: "Unit disconnected. Reconnecting…")
+        await postTimeSensitive(
+            title: "Gotcha Six",
+            body: "Unit disconnected. Reconnecting…",
+            identifier: "gotcha-six-disconnected"
+        )
     }
 
-    private func postTimeSensitive(title: String, body: String) async {
+    private func postTimeSensitive(title: String, body: String, identifier: String) async {
         let center = UNUserNotificationCenter.current()
         let settings = await center.notificationSettings()
         guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
@@ -242,7 +250,7 @@ final class SessionController: ObservableObject {
         content.interruptionLevel = .timeSensitive
 
         let request = UNNotificationRequest(
-            identifier: "gotcha-six-\(UUID().uuidString)",
+            identifier: identifier,
             content: content,
             trigger: nil
         )

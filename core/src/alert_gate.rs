@@ -85,6 +85,11 @@ impl AlertGate {
     }
 
     /// Returns true when an alert should fire for this observation.
+    ///
+    /// Presence, IMU, and unknown kinds never fire and do not end a close.
+    /// Stationary target samples also keep the close (no interrupt). Receding,
+    /// lost, or a target with no distance end the close so the next approach
+    /// can fire as a new first alert.
     pub fn observe(
         &mut self,
         kind: OutputKind,
@@ -96,11 +101,23 @@ impl AlertGate {
             return false;
         }
 
-        if kind != OutputKind::Target || motion != Motion::Approaching {
-            self.clear_close();
-            return false;
+        match kind {
+            OutputKind::Presence | OutputKind::Imu | OutputKind::Unknown => return false,
+            OutputKind::Target => {}
         }
 
+        match motion {
+            Motion::Approaching => self.observe_approaching(distance_m, now_ms),
+            Motion::Stationary => false,
+            Motion::Receding | Motion::Lost => {
+                self.clear_close();
+                false
+            }
+            Motion::Unknown => false,
+        }
+    }
+
+    fn observe_approaching(&mut self, distance_m: Option<f32>, now_ms: u64) -> bool {
         let Some(distance_m) = distance_m else {
             self.clear_close();
             return false;
@@ -200,6 +217,36 @@ mod tests {
         assert!(!gate.observe(OutputKind::Imu, Motion::Approaching, Some(5.0), 0));
         assert!(!gate.observe(OutputKind::Presence, Motion::Approaching, Some(5.0), 1));
         assert!(!gate.observe(OutputKind::Unknown, Motion::Approaching, Some(5.0), 2));
+    }
+
+    #[test]
+    fn presence_unknown_and_imu_do_not_rearm_first_close() {
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Presence, Motion::Unknown, None, 50));
+        assert!(!gate.observe(OutputKind::Unknown, Motion::Unknown, None, 60));
+        assert!(!gate.observe(OutputKind::Imu, Motion::Unknown, None, 70));
+        // Same close: next approaching sample must still honor 2s/1m, not fire as a new first.
+        assert!(!gate.observe(OutputKind::Target, Motion::Approaching, Some(11.5), 100));
+    }
+
+    #[test]
+    fn stationary_does_not_rearm_first_close() {
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Target, Motion::Stationary, Some(12.02), 50));
+        assert!(!gate.observe(OutputKind::Target, Motion::Approaching, Some(11.8), 100));
+    }
+
+    #[test]
+    fn lost_then_approaching_is_new_first_close() {
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Target, Motion::Lost, None, 100));
+        assert!(gate.observe(OutputKind::Target, Motion::Approaching, Some(11.0), 200));
     }
 
     #[test]
