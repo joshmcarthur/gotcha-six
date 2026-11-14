@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject private var onboarding: OnboardingStore
     @EnvironmentObject private var radar: RadarLink
+    @EnvironmentObject private var session: SessionController
 
     var body: some View {
         NavigationStack {
@@ -17,13 +18,33 @@ struct HomeView: View {
                     .font(.body)
                     .foregroundStyle(.secondary)
 
-                if let distance = radar.lastDistanceM, radar.isConnected {
+                if session.isSessionOn {
+                    Text("Session on")
+                        .font(.title3.weight(.semibold))
+                    if let distance = radar.lastDistanceM, radar.hasTarget {
+                        Text(String(format: "%@ · %.1f m", radar.lastMotion.capitalized, distance))
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    } else if radar.isConnected {
+                        Text("None")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                } else if let distance = radar.lastDistanceM, radar.isConnected, radar.hasTarget {
                     Text(String(format: "Last distance %.1f m · %@", distance, radar.lastMotion))
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
 
-                if !radar.isConnected {
+                if let error = session.lastError {
+                    Text(error)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
+
+                sessionButton
+
+                if !radar.isConnected, !session.isSessionOn {
                     Button(radar.storedPeripheralId == nil ? "Find device" : "Connect") {
                         if radar.storedPeripheralId != nil {
                             radar.reconnectStored()
@@ -31,13 +52,9 @@ struct HomeView: View {
                             onboarding.backToFindDevice()
                         }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
+                    .buttonStyle(.bordered)
                 }
 
-                Text("Start session arrives next. Until then, reconnect the unit, recalibrate, or play demo fixtures.")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
                 Spacer()
             }
             .padding(24)
@@ -56,12 +73,33 @@ struct HomeView: View {
                         }
                         if radar.storedPeripheralId != nil || radar.isConnected {
                             Button("Forget device", role: .destructive) {
+                                if session.isSessionOn {
+                                    session.endSession()
+                                }
                                 radar.forgetDevice()
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var sessionButton: some View {
+        if session.isSessionOn {
+            Button("End session") {
+                session.endSession()
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        } else {
+            Button("Start session") {
+                session.startSession()
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .disabled(!radar.isConnected)
         }
     }
 
@@ -76,7 +114,7 @@ struct HomeView: View {
             case .failed(let message):
                 return "Not connected · \(message)"
             default:
-                return "Not connected · saved device"
+                return session.isSessionOn ? "Disconnected · reconnecting" : "Not connected · saved device"
             }
         }
         return "Not connected"
