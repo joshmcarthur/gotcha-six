@@ -6,7 +6,15 @@ description = "C4001 radar and Gotcha Six IMU line parser, tracking, and motion 
 license = "MIT"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+# cdylib: Linux UniFFI generate + wasm-pack
+# staticlib: link into the iOS app (Xcode build phase)
+# rlib: normal Rust consumers / tests
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+required-features = ["uniffi-cli"]
 
 [dependencies]
 wasm-bindgen = { version = "0.2", optional = true }
@@ -20,6 +28,8 @@ default = []
 # Do not enable `wasm` and `uniffi` in the same build (separate bindgen stacks).
 wasm = ["dep:wasm-bindgen", "dep:serde", "dep:serde-wasm-bindgen", "dep:js-sys"]
 uniffi = ["dep:uniffi"]
+# Local bindgen CLI (UniFFI 0.29 has no crates.io binary). Not for app/link builds.
+uniffi-cli = ["uniffi", "uniffi/cli"]
 
 [dev-dependencies]
 
