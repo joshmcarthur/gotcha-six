@@ -27,6 +27,9 @@ struct RootView: View {
             case .demoSetup:
                 DemoSetupView()
                     .transition(.opacity.combined(with: .move(edge: .trailing)))
+            case .setup:
+                SetupView()
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
             case .calibration:
                 CalibrationView()
                     .transition(.opacity.combined(with: .move(edge: .trailing)))
