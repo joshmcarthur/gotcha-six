@@ -1,0 +1,561 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB5A329089D889A34A986BE /* RootView.swift */; };
+		141B015F51D8FFEEE22A2017 /* OnboardingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */; };
+		25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */; };
+		34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8C41CC86AD319C0BB918AD /* PermissionsView.swift */; };
+		36528064B1DB420F262661EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */; };
+		3BFDA69D408567ED1B017CB4 /* HowToAView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9503AC12F1147D358D934D72 /* HowToAView.swift */; };
+		3FBCEE1ED7D4A3D6CE072B10 /* HowToCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F996C207AE29CDFEC39A83E /* HowToCView.swift */; };
+		4F407706AE2288BCB8438D92 /* CoreSmoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */; };
+		4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */; };
+		79F30715292CD22AB2EC569B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E766FCF84EE21A82FC66528 /* HomeView.swift */; };
+		A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */; };
+		AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7132945FB64F84C22396BF3D /* GotchaSixApp.swift */; };
+		BFB76FD5576E84A8316DBD29 /* GotchaSixActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D06EEC69CAA5A1E83450D8CF /* HowToBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04D3A66F78209175A3EADB6 /* HowToBView.swift */; };
+		E77A8FA888CD4B83181EA8A9 /* FindDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8DF28B67DA6E80B8765796E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AED6FB31F7C5DC80E73BB1BC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00360953D51DC8A600A9ACB4;
+			remoteInfo = GotchaSixActivity;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A111C78423CC381D01ABCCC0 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BFB76FD5576E84A8316DBD29 /* GotchaSixActivity.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0E766FCF84EE21A82FC66528 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		1F996C207AE29CDFEC39A83E /* HowToCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToCView.swift; sourceTree = "<group>"; };
+		38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStore.swift; sourceTree = "<group>"; };
+		434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSmoke.swift; sourceTree = "<group>"; };
+		5AB5A329089D889A34A986BE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		7132945FB64F84C22396BF3D /* GotchaSixApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotchaSixApp.swift; sourceTree = "<group>"; };
+		7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = GotchaSixActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		9503AC12F1147D358D934D72 /* HowToAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToAView.swift; sourceTree = "<group>"; };
+		96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		B675535FA92E3DC1DA3DC83E /* GotchaSix.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GotchaSix.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDeviceView.swift; sourceTree = "<group>"; };
+		C04D3A66F78209175A3EADB6 /* HowToBView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToBView.swift; sourceTree = "<group>"; };
+		CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gotcha_six_core.swift; sourceTree = "<group>"; };
+		EE8C41CC86AD319C0BB918AD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
+		F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotchaSixActivityBundle.swift; sourceTree = "<group>"; };
+		FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0EE5C49579C26D655552A987 /* GotchaSixActivity */ = {
+			isa = PBXGroup;
+			children = (
+				F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */,
+			);
+			path = GotchaSixActivity;
+			sourceTree = "<group>";
+		};
+		42E41C90C85DA7103F8817A8 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */,
+				0E766FCF84EE21A82FC66528 /* HomeView.swift */,
+				9503AC12F1147D358D934D72 /* HowToAView.swift */,
+				C04D3A66F78209175A3EADB6 /* HowToBView.swift */,
+				1F996C207AE29CDFEC39A83E /* HowToCView.swift */,
+				EE8C41CC86AD319C0BB918AD /* PermissionsView.swift */,
+				96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		644E80E195C48FE2DD5E1BC3 = {
+			isa = PBXGroup;
+			children = (
+				68AC8AA19A828DAD5AFD926D /* GotchaSix */,
+				0EE5C49579C26D655552A987 /* GotchaSixActivity */,
+				91786214D4E25D087F8E6BF4 /* GotchaSixCore */,
+				C647D49FED06BCBA023CAA8F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		68AC8AA19A828DAD5AFD926D /* GotchaSix */ = {
+			isa = PBXGroup;
+			children = (
+				42E41C90C85DA7103F8817A8 /* Screens */,
+				FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */,
+				434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */,
+				7132945FB64F84C22396BF3D /* GotchaSixApp.swift */,
+				38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */,
+				5AB5A329089D889A34A986BE /* RootView.swift */,
+			);
+			path = GotchaSix;
+			sourceTree = "<group>";
+		};
+		7C0806F57B079FF6B5E06CD8 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */,
+			);
+			path = Generated;
+			sourceTree = "<group>";
+		};
+		91786214D4E25D087F8E6BF4 /* GotchaSixCore */ = {
+			isa = PBXGroup;
+			children = (
+				7C0806F57B079FF6B5E06CD8 /* Generated */,
+			);
+			path = GotchaSixCore;
+			sourceTree = "<group>";
+		};
+		C647D49FED06BCBA023CAA8F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B675535FA92E3DC1DA3DC83E /* GotchaSix.app */,
+				7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00360953D51DC8A600A9ACB4 /* GotchaSixActivity */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6F9CEDBB118B3BB4754CBF6 /* Build configuration list for PBXNativeTarget "GotchaSixActivity" */;
+			buildPhases = (
+				6B9CD795893821A333CB3E32 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GotchaSixActivity;
+			packageProductDependencies = (
+			);
+			productName = GotchaSixActivity;
+			productReference = 7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		30C627EECCC167AD92C2C719 /* GotchaSix */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7A6118F4FF7D39FC13D60E70 /* Build configuration list for PBXNativeTarget "GotchaSix" */;
+			buildPhases = (
+				4C5BBCD0260047445E5202F6 /* Build Rust Core */,
+				765C23C405153505EDDCE4C2 /* Sources */,
+				96B5019EB4037DB9CBF1497C /* Resources */,
+				A111C78423CC381D01ABCCC0 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7370191FADBD1AEB29BF25E0 /* PBXTargetDependency */,
+			);
+			name = GotchaSix;
+			packageProductDependencies = (
+			);
+			productName = GotchaSix;
+			productReference = B675535FA92E3DC1DA3DC83E /* GotchaSix.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AED6FB31F7C5DC80E73BB1BC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					00360953D51DC8A600A9ACB4 = {
+						ProvisioningStyle = Automatic;
+					};
+					30C627EECCC167AD92C2C719 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9D8875121BCF6FD7AAC366F2 /* Build configuration list for PBXProject "GotchaSix" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 644E80E195C48FE2DD5E1BC3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C647D49FED06BCBA023CAA8F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				30C627EECCC167AD92C2C719 /* GotchaSix */,
+				00360953D51DC8A600A9ACB4 /* GotchaSixActivity */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		96B5019EB4037DB9CBF1497C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36528064B1DB420F262661EB /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4C5BBCD0260047445E5202F6 /* Build Rust Core */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Rust Core";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/bash \"${SRCROOT}/Scripts/build-rust-core.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6B9CD795893821A333CB3E32 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		765C23C405153505EDDCE4C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F407706AE2288BCB8438D92 /* CoreSmoke.swift in Sources */,
+				E77A8FA888CD4B83181EA8A9 /* FindDeviceView.swift in Sources */,
+				AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */,
+				79F30715292CD22AB2EC569B /* HomeView.swift in Sources */,
+				3BFDA69D408567ED1B017CB4 /* HowToAView.swift in Sources */,
+				D06EEC69CAA5A1E83450D8CF /* HowToBView.swift in Sources */,
+				3FBCEE1ED7D4A3D6CE072B10 /* HowToCView.swift in Sources */,
+				141B015F51D8FFEEE22A2017 /* OnboardingStore.swift in Sources */,
+				34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */,
+				00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */,
+				25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */,
+				A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7370191FADBD1AEB29BF25E0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00360953D51DC8A600A9ACB4 /* GotchaSixActivity */;
+			targetProxy = 8DF28B67DA6E80B8765796E6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1EA16FF0A3B368EECE0AE3CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		2B1ACA8399E904EBA10CD412 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GotchaSixActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nz.mcarthur.GotchaSix.GotchaSixActivity;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		4F5A821077F3912C82A00F4E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GotchaSixCore/Generated",
+				);
+				INFOPLIST_FILE = GotchaSix/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GotchaSixCore/lib",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lgotcha_six_core",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/GotchaSixCore/Generated/gotcha_six_coreFFI.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nz.mcarthur.GotchaSix;
+				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = (
+					"$(SRCROOT)/GotchaSixCore/Generated",
+				);
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		81C502CEADCAA85E6201F2D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		8438EB31925CEEFA0D7495E5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GotchaSixCore/Generated",
+				);
+				INFOPLIST_FILE = GotchaSix/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/GotchaSixCore/lib",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lgotcha_six_core",
+				);
+				OTHER_SWIFT_FLAGS = (
+					"$(inherited)",
+					"-Xcc",
+					"-fmodule-map-file=$(SRCROOT)/GotchaSixCore/Generated/gotcha_six_coreFFI.modulemap",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nz.mcarthur.GotchaSix;
+				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = (
+					"$(SRCROOT)/GotchaSixCore/Generated",
+				);
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C43AE927ADEB612305D4BBBB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GotchaSixActivity/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nz.mcarthur.GotchaSix.GotchaSixActivity;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7A6118F4FF7D39FC13D60E70 /* Build configuration list for PBXNativeTarget "GotchaSix" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8438EB31925CEEFA0D7495E5 /* Debug */,
+				4F5A821077F3912C82A00F4E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9D8875121BCF6FD7AAC366F2 /* Build configuration list for PBXProject "GotchaSix" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1EA16FF0A3B368EECE0AE3CC /* Debug */,
+				81C502CEADCAA85E6201F2D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A6F9CEDBB118B3BB4754CBF6 /* Build configuration list for PBXNativeTarget "GotchaSixActivity" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C43AE927ADEB612305D4BBBB /* Debug */,
+				2B1ACA8399E904EBA10CD412 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AED6FB31F7C5DC80E73BB1BC /* Project object */;
+}
