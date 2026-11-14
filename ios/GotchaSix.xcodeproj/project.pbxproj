@@ -19,9 +19,12 @@
 		4F407706AE2288BCB8438D92 /* CoreSmoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */; };
 		4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */; };
 		5434D847955F939E675E5DEF /* wall_pass.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */; };
+		595370EFF25BE8B95F502357 /* GotchaSixActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1406DB1FD03E30796676AD55 /* GotchaSixActivityAttributes.swift */; };
 		5B05A9D0BF59E862BFBFB953 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26B9B31297B28510A02157 /* CalibrationView.swift */; };
 		7759229E12FA547E07449001 /* RadarLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51C632AF94560047CEA6474 /* RadarLink.swift */; };
 		79F30715292CD22AB2EC569B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E766FCF84EE21A82FC66528 /* HomeView.swift */; };
+		84C78BEA0FAE57C4A616A8F8 /* SessionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A176C8C4CC5E5AA6059D7E5F /* SessionController.swift */; };
+		86553E39DA284028345333B8 /* GotchaSixActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1406DB1FD03E30796676AD55 /* GotchaSixActivityAttributes.swift */; };
 		97FF0D05D7A118CF3C01F53F /* DemoSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811C5D9C2B3FB0109C618A35 /* DemoSetupView.swift */; };
 		A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */; };
 		AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7132945FB64F84C22396BF3D /* GotchaSixApp.swift */; };
@@ -63,6 +66,7 @@
 /* Begin PBXFileReference section */
 		0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = wall_pass.txt; sourceTree = "<group>"; };
 		0E766FCF84EE21A82FC66528 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		1406DB1FD03E30796676AD55 /* GotchaSixActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotchaSixActivityAttributes.swift; sourceTree = "<group>"; };
 		1F996C207AE29CDFEC39A83E /* HowToCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToCView.swift; sourceTree = "<group>"; };
 		214CC7FE28E6AE0A132295AD /* DemoScenarioPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScenarioPicker.swift; sourceTree = "<group>"; };
 		38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStore.swift; sourceTree = "<group>"; };
@@ -77,8 +81,10 @@
 		9503AC12F1147D358D934D72 /* HowToAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToAView.swift; sourceTree = "<group>"; };
 		96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		99EA6CF9053A06F069F10BFB /* FixturePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixturePlayer.swift; sourceTree = "<group>"; };
+		A176C8C4CC5E5AA6059D7E5F /* SessionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionController.swift; sourceTree = "<group>"; };
 		A51C632AF94560047CEA6474 /* RadarLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLink.swift; sourceTree = "<group>"; };
 		A51E05356FC9ED29CA8D22B7 /* FixtureScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureScenario.swift; sourceTree = "<group>"; };
+		B45994064A1B831088C707AA /* GotchaSix.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GotchaSix.entitlements; sourceTree = "<group>"; };
 		B675535FA92E3DC1DA3DC83E /* GotchaSix.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GotchaSix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA38D3B4BB581D7D7EDD462C /* CalibrationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationModel.swift; sourceTree = "<group>"; };
 		BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDeviceView.swift; sourceTree = "<group>"; };
@@ -108,6 +114,14 @@
 			path = GotchaSixActivity;
 			sourceTree = "<group>";
 		};
+		16FCC0BBC9999D80B151FEC4 /* Session */ = {
+			isa = PBXGroup;
+			children = (
+				A176C8C4CC5E5AA6059D7E5F /* SessionController.swift */,
+			);
+			path = Session;
+			sourceTree = "<group>";
+		};
 		37491542A20519EB6A5A07E2 /* gotcha-six */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +149,14 @@
 			path = Screens;
 			sourceTree = "<group>";
 		};
+		58D29ACE10E65DB3CA77A1E7 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				1406DB1FD03E30796676AD55 /* GotchaSixActivityAttributes.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		644E80E195C48FE2DD5E1BC3 = {
 			isa = PBXGroup;
 			children = (
@@ -142,6 +164,7 @@
 				68AC8AA19A828DAD5AFD926D /* GotchaSix */,
 				0EE5C49579C26D655552A987 /* GotchaSixActivity */,
 				91786214D4E25D087F8E6BF4 /* GotchaSixCore */,
+				58D29ACE10E65DB3CA77A1E7 /* Shared */,
 				C647D49FED06BCBA023CAA8F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -163,8 +186,10 @@
 				E050D8A5984E27D664226385 /* Demo */,
 				F33DE3909699E0A25EF20B27 /* Illustrations */,
 				42E41C90C85DA7103F8817A8 /* Screens */,
+				16FCC0BBC9999D80B151FEC4 /* Session */,
 				FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */,
 				434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */,
+				B45994064A1B831088C707AA /* GotchaSix.entitlements */,
 				7132945FB64F84C22396BF3D /* GotchaSixApp.swift */,
 				38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */,
 				5AB5A329089D889A34A986BE /* RootView.swift */,
@@ -350,6 +375,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				86553E39DA284028345333B8 /* GotchaSixActivityAttributes.swift in Sources */,
 				4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +392,7 @@
 				E77A8FA888CD4B83181EA8A9 /* FindDeviceView.swift in Sources */,
 				C49BF3841B6AD24E5727802B /* FixturePlayer.swift in Sources */,
 				BB309344CF2857AD13324351 /* FixtureScenario.swift in Sources */,
+				595370EFF25BE8B95F502357 /* GotchaSixActivityAttributes.swift in Sources */,
 				AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */,
 				79F30715292CD22AB2EC569B /* HomeView.swift in Sources */,
 				3BFDA69D408567ED1B017CB4 /* HowToAView.swift in Sources */,
@@ -375,6 +402,7 @@
 				34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */,
 				7759229E12FA547E07449001 /* RadarLink.swift in Sources */,
 				00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */,
+				84C78BEA0FAE57C4A616A8F8 /* SessionController.swift in Sources */,
 				0DE8A8929CE9A9C7A4361B84 /* SetupView.swift in Sources */,
 				149B8EC6827D85C9FF46A7A9 /* TeachingImage.swift in Sources */,
 				25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */,
@@ -480,6 +508,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GotchaSix/GotchaSix.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -576,6 +605,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GotchaSix/GotchaSix.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				GENERATE_INFOPLIST_FILE = NO;

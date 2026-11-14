@@ -20,6 +20,7 @@ targets:
       - path: GotchaSix
         excludes:
           - Info.plist
+      - path: Shared
       # Created by Scripts/build-rust-core.sh before compile. Keep the path in
       # the project even when the gitignored file is absent at checkout.
       - path: GotchaSixCore/Generated/gotcha_six_core.swift
@@ -37,6 +38,8 @@ targets:
     dependencies:
       - target: GotchaSixActivity
         embed: true
+    entitlements:
+      path: GotchaSix/GotchaSix.entitlements
     preBuildScripts:
       - name: Build Rust Core
         basedOnDependencyAnalysis: false
@@ -75,6 +78,7 @@ targets:
       - path: GotchaSixActivity
         excludes:
           - Info.plist
+      - path: Shared
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: nz.mcarthur.GotchaSix.GotchaSixActivity
       INFOPLIST_FILE: GotchaSixActivity/Info.plist

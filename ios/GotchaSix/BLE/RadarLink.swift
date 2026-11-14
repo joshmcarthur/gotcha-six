@@ -38,8 +38,12 @@ final class RadarLink: NSObject, ObservableObject {
     @Published private(set) var lastMotion = "none"
     @Published private(set) var lastDistanceM: Double?
     @Published private(set) var lastKind = ""
+    @Published private(set) var hasTarget = false
     @Published private(set) var isSendingPreset = false
     @Published private(set) var lastError: String?
+    /// Bumps when AlertGate says fire while a session is armed.
+    @Published private(set) var alertSequence: UInt64 = 0
+    @Published private(set) var lastAlertDistanceM: Double?
 
     private let engine = UniffiRadarEngine()
     private let alertGate = UniffiAlertGate()
@@ -48,6 +52,8 @@ final class RadarLink: NSObject, ObservableObject {
     private var rxCharacteristic: CBCharacteristic?
     private var peripheralsById: [UUID: CBPeripheral] = [:]
     private var sawTargetSinceConnect = false
+    private var sessionArmed = false
+    private var sessionStartedAt = Date()
     private var reconnectWatch: Task<Void, Never>?
     private var presetTask: Task<Void, Never>?
 
@@ -143,11 +149,35 @@ final class RadarLink: NSObject, ObservableObject {
         }
     }
 
+    /// Reset parser + gate and arm AlertGate for a ride session.
+    func beginSessionParsing() {
+        resetEngines()
+        sessionArmed = true
+        sessionStartedAt = Date()
+        alertGate.setSessionOn(on: true)
+    }
+
+    /// Disarm alerts; leave BLE and NUS as they are.
+    func endSessionParsing() {
+        sessionArmed = false
+        alertGate.setSessionOn(on: false)
+    }
+
+    /// After reconnect during an active session, re-arm the gate (reset cleared it).
+    func rearmSessionParsing() {
+        guard sessionArmed else { return }
+        alertGate.setSessionOn(on: true)
+    }
+
+    var isSessionArmed: Bool { sessionArmed }
+
     private func connect(peripheral: CBPeripheral) {
         self.peripheral = peripheral
         peripheral.delegate = self
         phase = .connecting
+        let keepSession = sessionArmed
         resetEngines()
+        sessionArmed = keepSession
         sawTargetSinceConnect = false
         central.connect(peripheral, options: nil)
     }
@@ -158,6 +188,7 @@ final class RadarLink: NSObject, ObservableObject {
         lastMotion = "none"
         lastDistanceM = nil
         lastKind = ""
+        hasTarget = false
         isSendingPreset = false
         if !keepStoredId {
             storedPeripheralId = nil
@@ -170,6 +201,8 @@ final class RadarLink: NSObject, ObservableObject {
         lastMotion = "none"
         lastDistanceM = nil
         lastKind = ""
+        hasTarget = false
+        lastAlertDistanceM = nil
     }
 
     private func persistPeripheralId(_ id: UUID) {
@@ -243,17 +276,58 @@ final class RadarLink: NSObject, ObservableObject {
 
     private func ingest(_ data: Data) {
         let outputs = engine.pushBytes(data: data)
+        let nowMs = UInt64(max(0, Date().timeIntervalSince(sessionStartedAt) * 1000))
         for out in outputs {
             lastKind = out.kind
             if !out.motion.isEmpty {
                 lastMotion = out.motion
             }
-            if let d = out.distanceM {
-                lastDistanceM = Double(d)
-            }
-            if out.kind == "target" || out.kind == "presence" {
+            if out.kind == "target" {
+                hasTarget = true
+                if let d = out.distanceM {
+                    lastDistanceM = Double(d)
+                }
+                sawTargetSinceConnect = true
+            } else if out.kind == "presence" {
+                hasTarget = false
+                lastDistanceM = out.distanceM.map(Double.init)
                 sawTargetSinceConnect = true
             }
+
+            if sessionArmed, shouldObserve(out),
+               alertGate.observe(
+                   kind: outputKind(out.kind),
+                   motion: motionValue(out.motion),
+                   distanceM: out.distanceM,
+                   nowMs: nowMs
+               )
+            {
+                alertSequence += 1
+                lastAlertDistanceM = out.distanceM.map(Double.init)
+            }
+        }
+    }
+
+    private func shouldObserve(_ out: EngineOutput) -> Bool {
+        out.kind == "target" || out.kind == "presence" || out.kind == "unknown"
+    }
+
+    private func outputKind(_ raw: String) -> OutputKind {
+        switch raw {
+        case "presence": return .presence
+        case "target": return .target
+        case "imu": return .imu
+        default: return .unknown
+        }
+    }
+
+    private func motionValue(_ raw: String) -> Motion {
+        switch raw {
+        case "approaching": return .approaching
+        case "receding": return .receding
+        case "stationary": return .stationary
+        case "lost": return .lost
+        default: return .unknown
         }
     }
 
