@@ -39,3 +39,26 @@ fn fixture_approach_session_detects_approaching_then_lost() {
     assert!(outs.iter().any(|o| matches!(o.event, RadarEvent::Imu(_))));
     assert!(outs.iter().any(|o| o.motion == Motion::Lost));
 }
+
+#[test]
+fn fixture_wall_pass_detects_approaching_then_lost() {
+    let mut engine = RadarEngine::new();
+    let outs = push_fixture(&mut engine, "wall_pass.txt");
+    assert!(outs.iter().any(|o| o.motion == Motion::Approaching));
+    assert!(outs.iter().any(|o| o.motion == Motion::Lost));
+}
+
+#[test]
+fn fixture_wall_fail_never_approaching() {
+    let mut engine = RadarEngine::new();
+    let outs = push_fixture(&mut engine, "wall_fail.txt");
+    assert!(!outs.is_empty());
+    assert!(outs.iter().all(|o| o.motion != Motion::Approaching));
+}
+
+#[test]
+fn fixture_alert_approach_detects_approaching() {
+    let mut engine = RadarEngine::new();
+    let outs = push_fixture(&mut engine, "alert_approach.txt");
+    assert!(outs.iter().any(|o| o.motion == Motion::Approaching));
+}
