@@ -20,6 +20,7 @@
 		4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */; };
 		5434D847955F939E675E5DEF /* wall_pass.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */; };
 		5B05A9D0BF59E862BFBFB953 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26B9B31297B28510A02157 /* CalibrationView.swift */; };
+		7759229E12FA547E07449001 /* RadarLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51C632AF94560047CEA6474 /* RadarLink.swift */; };
 		79F30715292CD22AB2EC569B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E766FCF84EE21A82FC66528 /* HomeView.swift */; };
 		97FF0D05D7A118CF3C01F53F /* DemoSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811C5D9C2B3FB0109C618A35 /* DemoSetupView.swift */; };
 		A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */; };
@@ -74,6 +75,7 @@
 		9503AC12F1147D358D934D72 /* HowToAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToAView.swift; sourceTree = "<group>"; };
 		96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		99EA6CF9053A06F069F10BFB /* FixturePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixturePlayer.swift; sourceTree = "<group>"; };
+		A51C632AF94560047CEA6474 /* RadarLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarLink.swift; sourceTree = "<group>"; };
 		A51E05356FC9ED29CA8D22B7 /* FixtureScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureScenario.swift; sourceTree = "<group>"; };
 		B675535FA92E3DC1DA3DC83E /* GotchaSix.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GotchaSix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDeviceView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 		68AC8AA19A828DAD5AFD926D /* GotchaSix */ = {
 			isa = PBXGroup;
 			children = (
+				9E8EAB3F444E35CED946F697 /* BLE */,
 				E050D8A5984E27D664226385 /* Demo */,
 				F33DE3909699E0A25EF20B27 /* Illustrations */,
 				42E41C90C85DA7103F8817A8 /* Screens */,
@@ -180,6 +183,14 @@
 				7C0806F57B079FF6B5E06CD8 /* Generated */,
 			);
 			path = GotchaSixCore;
+			sourceTree = "<group>";
+		};
+		9E8EAB3F444E35CED946F697 /* BLE */ = {
+			isa = PBXGroup;
+			children = (
+				A51C632AF94560047CEA6474 /* RadarLink.swift */,
+			);
+			path = BLE;
 			sourceTree = "<group>";
 		};
 		C647D49FED06BCBA023CAA8F /* Products */ = {
@@ -359,6 +370,7 @@
 				3FBCEE1ED7D4A3D6CE072B10 /* HowToCView.swift in Sources */,
 				141B015F51D8FFEEE22A2017 /* OnboardingStore.swift in Sources */,
 				34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */,
+				7759229E12FA547E07449001 /* RadarLink.swift in Sources */,
 				00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */,
 				149B8EC6827D85C9FF46A7A9 /* TeachingImage.swift in Sources */,
 				25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */,
