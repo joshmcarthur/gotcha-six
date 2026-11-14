@@ -10,19 +10,10 @@ struct WelcomeView: View {
                 .font(.largeTitle.weight(.bold))
             Text("Watches behind you while you run or ride.")
                 .font(.title3)
-            Text("It is an aid, not a substitute for looking.")
+            Text("An aid for awareness — not a substitute for looking.")
                 .font(.body)
                 .foregroundStyle(.secondary)
-            // Illustration slot — slice 7
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.secondary.opacity(0.12))
-                .frame(maxWidth: .infinity)
-                .frame(height: 180)
-                .overlay {
-                    Text("Illustration")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+            TeachingImage(name: "TeachingWelcome")
             Spacer()
             Button("Continue") {
                 onboarding.continueFromWelcome()

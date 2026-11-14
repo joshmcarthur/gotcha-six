@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" fill="none">
+  <rect width="320" height="180" rx="12" fill="#3d9b6e" fill-opacity="0.08"/>
+  <rect x="70" y="36" width="70" height="120" rx="14" stroke="#1a1a1a" stroke-opacity="0.45" stroke-width="3" fill="none"/>
+  <rect x="160" y="58" width="120" height="48" rx="10" fill="#3d9b6e" fill-opacity="0.28"/>
+  <text x="220" y="88" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#3d9b6e">Live</text>
+</svg>
