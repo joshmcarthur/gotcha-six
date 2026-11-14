@@ -2,43 +2,53 @@ import SwiftUI
 
 struct FindDeviceView: View {
     @EnvironmentObject private var onboarding: OnboardingStore
-    @State private var refreshToken = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Spacer(minLength: 24)
             Text("Find device")
                 .font(.largeTitle.weight(.bold))
-            Text("Turn the unit on. It advertises as Gotcha Six.")
+            Text("Turn the unit on. It advertises as Gotcha Six. Real Bluetooth scanning arrives in a later update.")
                 .font(.body)
                 .foregroundStyle(.secondary)
 
-            List {
-                Text("No devices yet")
-                    .foregroundStyle(.secondary)
-            }
-            .listStyle(.plain)
-            .frame(maxHeight: 220)
-            .id(refreshToken)
+            VStack(spacing: 0) {
+                Button {
+                    onboarding.startDemoDevice()
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Demo Gotcha Six")
+                                .font(.body.weight(.semibold))
+                            Text("Simulated unit · no hardware")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 14)
+                    .padding(.horizontal, 4)
+                }
+                .buttonStyle(.plain)
 
-            Text("Scanning arrives in the next slice. Continue to Home for now.")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                Divider()
+
+                Text("No real devices nearby")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 14)
+            }
 
             Spacer()
-            HStack(spacing: 12) {
-                Button("Retry") {
-                    refreshToken += 1
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
 
-                Button("Continue") {
-                    onboarding.finishFindDevice()
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+            Button("Continue without device") {
+                onboarding.continueWithoutDevice()
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

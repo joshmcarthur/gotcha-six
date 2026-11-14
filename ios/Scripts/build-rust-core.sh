@@ -44,16 +44,25 @@ mkdir -p "${OUT}" "${LIB_DIR}"
 echo "Building gotcha-six-core (${RUST_TARGET}, uniffi)…"
 cargo build -p gotcha-six-core --features uniffi --release --target "${RUST_TARGET}"
 
-# Bindgen reads a host library (cdylib). Build the host crate once, then generate.
+# Bindgen needs a host cdylib. Xcode injects an iOS SDKROOT that breaks macOS link
+# ("library 'System' not found") — force the macOS SDK for host cargo only.
+MAC_SDK="$(xcrun --sdk macosx --show-sdk-path)"
+host_cargo() {
+  env -u IPHONEOS_DEPLOYMENT_TARGET -u TVOS_DEPLOYMENT_TARGET \
+    -u XROS_DEPLOYMENT_TARGET -u WATCHOS_DEPLOYMENT_TARGET \
+    SDKROOT="${MAC_SDK}" \
+    cargo "$@"
+}
+
 echo "Generating UniFFI Swift → ${OUT}"
-cargo build -p gotcha-six-core --features uniffi --release
+host_cargo build -p gotcha-six-core --features uniffi --release
 HOST_LIB="${CARGO_TARGET_DIR}/release/libgotcha_six_core.dylib"
 if [[ ! -f "${HOST_LIB}" ]]; then
   echo "error: missing host library ${HOST_LIB}" >&2
   exit 1
 fi
 
-cargo run -p gotcha-six-core --features uniffi-cli --bin uniffi-bindgen -- \
+host_cargo run -p gotcha-six-core --features uniffi-cli --bin uniffi-bindgen -- \
   generate --library "${HOST_LIB}" --language swift --out-dir "${OUT}"
 
 STATIC_LIB="${CARGO_TARGET_DIR}/${RUST_TARGET}/release/libgotcha_six_core.a"

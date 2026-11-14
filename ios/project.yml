@@ -24,6 +24,16 @@ targets:
       # the project even when the gitignored file is absent at checkout.
       - path: GotchaSixCore/Generated/gotcha_six_core.swift
         optional: true
+      # Shared with core tests — single source under core/tests/fixtures/.
+      - path: ../core/tests/fixtures/wall_pass.txt
+        buildPhase: resources
+        type: file
+      - path: ../core/tests/fixtures/wall_fail.txt
+        buildPhase: resources
+        type: file
+      - path: ../core/tests/fixtures/alert_approach.txt
+        buildPhase: resources
+        type: file
     dependencies:
       - target: GotchaSixActivity
         embed: true

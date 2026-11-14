@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB5A329089D889A34A986BE /* RootView.swift */; };
 		141B015F51D8FFEEE22A2017 /* OnboardingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */; };
+		1DC59E864B0287A7AA55D7A8 /* DemoCalibrationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BE733AB36109579D1877E0 /* DemoCalibrationModel.swift */; };
 		25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */; };
 		34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE8C41CC86AD319C0BB918AD /* PermissionsView.swift */; };
 		36528064B1DB420F262661EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */; };
@@ -16,12 +17,21 @@
 		3FBCEE1ED7D4A3D6CE072B10 /* HowToCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F996C207AE29CDFEC39A83E /* HowToCView.swift */; };
 		4F407706AE2288BCB8438D92 /* CoreSmoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */; };
 		4F436BA07455B95D44EFAAFA /* GotchaSixActivityBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */; };
+		5434D847955F939E675E5DEF /* wall_pass.txt in Resources */ = {isa = PBXBuildFile; fileRef = 0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */; };
+		5B05A9D0BF59E862BFBFB953 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB26B9B31297B28510A02157 /* CalibrationView.swift */; };
 		79F30715292CD22AB2EC569B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E766FCF84EE21A82FC66528 /* HomeView.swift */; };
+		97FF0D05D7A118CF3C01F53F /* DemoSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811C5D9C2B3FB0109C618A35 /* DemoSetupView.swift */; };
 		A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */; };
 		AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7132945FB64F84C22396BF3D /* GotchaSixApp.swift */; };
+		BB309344CF2857AD13324351 /* FixtureScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51E05356FC9ED29CA8D22B7 /* FixtureScenario.swift */; };
+		BF9D47D87E9B86A67982A625 /* TeachingIllustrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAC1FD5A37D90B47BBB298F /* TeachingIllustrations.swift */; };
 		BFB76FD5576E84A8316DBD29 /* GotchaSixActivity.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C49BF3841B6AD24E5727802B /* FixturePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99EA6CF9053A06F069F10BFB /* FixturePlayer.swift */; };
 		D06EEC69CAA5A1E83450D8CF /* HowToBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04D3A66F78209175A3EADB6 /* HowToBView.swift */; };
+		D620E4A3974B03DC3A1706F3 /* alert_approach.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5E8F72B2F7D85D219778542B /* alert_approach.txt */; };
 		E77A8FA888CD4B83181EA8A9 /* FindDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */; };
+		E7CA03B1F177FE2A774353A4 /* wall_fail.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5E1C7323542E72BB040F526F /* wall_fail.txt */; };
+		FC38310BE98384EE20DEB3CF /* DemoScenarioPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214CC7FE28E6AE0A132295AD /* DemoScenarioPicker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,25 +59,43 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = wall_pass.txt; sourceTree = "<group>"; };
 		0E766FCF84EE21A82FC66528 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		1F996C207AE29CDFEC39A83E /* HowToCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToCView.swift; sourceTree = "<group>"; };
+		214CC7FE28E6AE0A132295AD /* DemoScenarioPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScenarioPicker.swift; sourceTree = "<group>"; };
 		38BBD99DCE9E7F7A2F762399 /* OnboardingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStore.swift; sourceTree = "<group>"; };
 		434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreSmoke.swift; sourceTree = "<group>"; };
 		5AB5A329089D889A34A986BE /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		5E1C7323542E72BB040F526F /* wall_fail.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = wall_fail.txt; sourceTree = "<group>"; };
+		5E8F72B2F7D85D219778542B /* alert_approach.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = alert_approach.txt; sourceTree = "<group>"; };
+		6DAC1FD5A37D90B47BBB298F /* TeachingIllustrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeachingIllustrations.swift; sourceTree = "<group>"; };
 		7132945FB64F84C22396BF3D /* GotchaSixApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotchaSixApp.swift; sourceTree = "<group>"; };
 		7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = GotchaSixActivity.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		811C5D9C2B3FB0109C618A35 /* DemoSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSetupView.swift; sourceTree = "<group>"; };
 		9503AC12F1147D358D934D72 /* HowToAView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToAView.swift; sourceTree = "<group>"; };
 		96EB211DF207D6D72EAEB3C0 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		99EA6CF9053A06F069F10BFB /* FixturePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixturePlayer.swift; sourceTree = "<group>"; };
+		A51E05356FC9ED29CA8D22B7 /* FixtureScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureScenario.swift; sourceTree = "<group>"; };
 		B675535FA92E3DC1DA3DC83E /* GotchaSix.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GotchaSix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindDeviceView.swift; sourceTree = "<group>"; };
 		C04D3A66F78209175A3EADB6 /* HowToBView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToBView.swift; sourceTree = "<group>"; };
+		CB26B9B31297B28510A02157 /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationView.swift; sourceTree = "<group>"; };
 		CD6BED0D6E7AA84162D2072B /* gotcha_six_core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gotcha_six_core.swift; sourceTree = "<group>"; };
+		D5BE733AB36109579D1877E0 /* DemoCalibrationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCalibrationModel.swift; sourceTree = "<group>"; };
 		EE8C41CC86AD319C0BB918AD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		F8A87ABD9CD04E78117B3859 /* GotchaSixActivityBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GotchaSixActivityBundle.swift; sourceTree = "<group>"; };
 		FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0CDC925C7404353FB9DF859A /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				66971D8651EE7A8481ED2853 /* fixtures */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
 		0EE5C49579C26D655552A987 /* GotchaSixActivity */ = {
 			isa = PBXGroup;
 			children = (
@@ -76,9 +104,21 @@
 			path = GotchaSixActivity;
 			sourceTree = "<group>";
 		};
+		37491542A20519EB6A5A07E2 /* gotcha-six */ = {
+			isa = PBXGroup;
+			children = (
+				F5643E6EA1B691C75CAB1406 /* core */,
+			);
+			name = "gotcha-six";
+			path = ..;
+			sourceTree = "<group>";
+		};
 		42E41C90C85DA7103F8817A8 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				CB26B9B31297B28510A02157 /* CalibrationView.swift */,
+				214CC7FE28E6AE0A132295AD /* DemoScenarioPicker.swift */,
+				811C5D9C2B3FB0109C618A35 /* DemoSetupView.swift */,
 				BF3F3351AC62B1715EB305C1 /* FindDeviceView.swift */,
 				0E766FCF84EE21A82FC66528 /* HomeView.swift */,
 				9503AC12F1147D358D934D72 /* HowToAView.swift */,
@@ -93,6 +133,7 @@
 		644E80E195C48FE2DD5E1BC3 = {
 			isa = PBXGroup;
 			children = (
+				37491542A20519EB6A5A07E2 /* gotcha-six */,
 				68AC8AA19A828DAD5AFD926D /* GotchaSix */,
 				0EE5C49579C26D655552A987 /* GotchaSixActivity */,
 				91786214D4E25D087F8E6BF4 /* GotchaSixCore */,
@@ -100,9 +141,21 @@
 			);
 			sourceTree = "<group>";
 		};
+		66971D8651EE7A8481ED2853 /* fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				5E8F72B2F7D85D219778542B /* alert_approach.txt */,
+				5E1C7323542E72BB040F526F /* wall_fail.txt */,
+				0D3B4FA97CD3B948FFCD1CCD /* wall_pass.txt */,
+			);
+			path = fixtures;
+			sourceTree = "<group>";
+		};
 		68AC8AA19A828DAD5AFD926D /* GotchaSix */ = {
 			isa = PBXGroup;
 			children = (
+				E050D8A5984E27D664226385 /* Demo */,
+				F33DE3909699E0A25EF20B27 /* Illustrations */,
 				42E41C90C85DA7103F8817A8 /* Screens */,
 				FA63FB5DBA81728AA6F1E479 /* Assets.xcassets */,
 				434A960A36B829BCDEE4BBDD /* CoreSmoke.swift */,
@@ -136,6 +189,32 @@
 				7EABBBCB6C5412667742DADE /* GotchaSixActivity.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E050D8A5984E27D664226385 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				D5BE733AB36109579D1877E0 /* DemoCalibrationModel.swift */,
+				99EA6CF9053A06F069F10BFB /* FixturePlayer.swift */,
+				A51E05356FC9ED29CA8D22B7 /* FixtureScenario.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		F33DE3909699E0A25EF20B27 /* Illustrations */ = {
+			isa = PBXGroup;
+			children = (
+				6DAC1FD5A37D90B47BBB298F /* TeachingIllustrations.swift */,
+			);
+			path = Illustrations;
+			sourceTree = "<group>";
+		};
+		F5643E6EA1B691C75CAB1406 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				0CDC925C7404353FB9DF859A /* tests */,
+			);
+			path = core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -222,6 +301,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				36528064B1DB420F262661EB /* Assets.xcassets in Resources */,
+				D620E4A3974B03DC3A1706F3 /* alert_approach.txt in Resources */,
+				E7CA03B1F177FE2A774353A4 /* wall_fail.txt in Resources */,
+				5434D847955F939E675E5DEF /* wall_pass.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,8 +344,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B05A9D0BF59E862BFBFB953 /* CalibrationView.swift in Sources */,
 				4F407706AE2288BCB8438D92 /* CoreSmoke.swift in Sources */,
+				1DC59E864B0287A7AA55D7A8 /* DemoCalibrationModel.swift in Sources */,
+				FC38310BE98384EE20DEB3CF /* DemoScenarioPicker.swift in Sources */,
+				97FF0D05D7A118CF3C01F53F /* DemoSetupView.swift in Sources */,
 				E77A8FA888CD4B83181EA8A9 /* FindDeviceView.swift in Sources */,
+				C49BF3841B6AD24E5727802B /* FixturePlayer.swift in Sources */,
+				BB309344CF2857AD13324351 /* FixtureScenario.swift in Sources */,
 				AC97135DC6B49E8AB3646B9D /* GotchaSixApp.swift in Sources */,
 				79F30715292CD22AB2EC569B /* HomeView.swift in Sources */,
 				3BFDA69D408567ED1B017CB4 /* HowToAView.swift in Sources */,
@@ -272,6 +360,7 @@
 				141B015F51D8FFEEE22A2017 /* OnboardingStore.swift in Sources */,
 				34F4A5DF29C651B8A4E5A352 /* PermissionsView.swift in Sources */,
 				00C3A2B9FBDAA9BBBEFA6594 /* RootView.swift in Sources */,
+				BF9D47D87E9B86A67982A625 /* TeachingIllustrations.swift in Sources */,
 				25C73AAE991BB08494A8EB58 /* WelcomeView.swift in Sources */,
 				A57845C2C8C0DF736966D805 /* gotcha_six_core.swift in Sources */,
 			);
