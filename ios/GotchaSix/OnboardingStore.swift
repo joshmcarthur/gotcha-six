@@ -9,6 +9,7 @@ enum AppRoute: Hashable {
     case howToC
     case findDevice
     case demoSetup
+    case setup
     case calibration
     case home
 }
@@ -16,6 +17,7 @@ enum AppRoute: Hashable {
 enum CalibrationStatus: String {
     case incomplete
     case demoPassed
+    case passed
     case skipped
 }
 
@@ -57,6 +59,7 @@ final class OnboardingStore: ObservableObject {
         case "howToC": return .howToC
         case "findDevice": return .findDevice
         case "demoSetup": return .demoSetup
+        case "setup": return .setup
         case "calibration": return .calibration
         case "home": return .home
         default: return nil
@@ -99,7 +102,19 @@ final class OnboardingStore: ObservableObject {
         route = .demoSetup
     }
 
+    func startLiveSetup() {
+        route = .setup
+    }
+
+    func backToFindDevice() {
+        route = .findDevice
+    }
+
     func continueFromDemoSetup() {
+        route = .calibration
+    }
+
+    func continueFromLiveSetup() {
         route = .calibration
     }
 
@@ -108,9 +123,18 @@ final class OnboardingStore: ObservableObject {
         finishOnboardingToHome()
     }
 
+    func completeLiveCalibration(passed: Bool) {
+        setCalibration(passed ? .passed : .skipped)
+        finishOnboardingToHome()
+    }
+
     func skipCalibration() {
         setCalibration(.skipped)
         finishOnboardingToHome()
+    }
+
+    func openRecalibrate() {
+        route = .calibration
     }
 
     func replayHowTo() {
