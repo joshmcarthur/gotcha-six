@@ -16,6 +16,8 @@ describe("preset", () => {
     expect(preset).toContain("setRunApp 1");
     expect(preset).toContain("setRange 0.6 25");
     expect(preset).toContain("setUartOutput 2 1 1 1");
+    expect(preset).toContain("setMicroMotion 0");
+    expect(preset).not.toContain("setMicroMotion 1");
   });
 
   it("encodes CRLF command lines", () => {

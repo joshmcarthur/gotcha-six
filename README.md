@@ -62,7 +62,7 @@ Default module max range is 6 m — too short for rear traffic. Use the lab **Go
 sensorStop
 setRunApp 1
 setRange 0.6 25
-setMicroMotion 1
+setMicroMotion 0
 setThrFactor 5
 setUartOutput 2 1 1 1
 saveConfig

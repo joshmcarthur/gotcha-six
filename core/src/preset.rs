@@ -5,7 +5,7 @@ pub const GOTCHA_SIX_PRESET: &[&str] = &[
     "sensorStop",
     "setRunApp 1",
     "setRange 0.6 25",
-    "setMicroMotion 1",
+    "setMicroMotion 0",
     "setThrFactor 5",
     "setUartOutput 2 1 1 1",
     "saveConfig",
@@ -38,6 +38,12 @@ mod tests {
         assert!(GOTCHA_SIX_PRESET.contains(&"setRunApp 1"));
         assert!(GOTCHA_SIX_PRESET.contains(&"setRange 0.6 25"));
         assert!(GOTCHA_SIX_PRESET.contains(&"setUartOutput 2 1 1 1"));
+    }
+
+    #[test]
+    fn disables_micro_motion() {
+        assert!(GOTCHA_SIX_PRESET.contains(&"setMicroMotion 0"));
+        assert!(!GOTCHA_SIX_PRESET.contains(&"setMicroMotion 1"));
     }
 
     #[test]
