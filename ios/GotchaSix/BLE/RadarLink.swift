@@ -294,7 +294,7 @@ final class RadarLink: NSObject, ObservableObject {
                 sawTargetSinceConnect = true
             }
 
-            if sessionArmed, shouldObserve(out),
+            if sessionArmed, out.kind == "target",
                alertGate.observe(
                    kind: outputKind(out.kind),
                    motion: motionValue(out.motion),
@@ -306,10 +306,6 @@ final class RadarLink: NSObject, ObservableObject {
                 lastAlertDistanceM = out.distanceM.map(Double.init)
             }
         }
-    }
-
-    private func shouldObserve(_ out: EngineOutput) -> Bool {
-        out.kind == "target" || out.kind == "presence" || out.kind == "unknown"
     }
 
     private func outputKind(_ raw: String) -> OutputKind {
