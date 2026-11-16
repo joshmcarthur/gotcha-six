@@ -43,3 +43,7 @@ lab/dist/
 
 # Local simulator evidence (attached on the PR, not committed)
 /artifacts/
+
+# 3D print exports
+hardware/*.stl
+hardware/*.3mf
