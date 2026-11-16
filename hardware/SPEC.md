@@ -30,7 +30,7 @@ Consequences:
 | Width | 25.94 | M |
 | Height | 29.96 | M |
 | Depth, total | 2.7 | M |
-| Corners | Round. Radius not known. The design must not depend on it: bay corners use a 1.0 radius | M (shape) |
+| Corners | Round. Radius about 1.5 (estimate by Josh, 2026-11-13, after the first print: the board did not go into bay corners of radius 3.6) | A |
 | Faces | One flat face with the antenna patches. All parts and the header pads on the other face | M |
 | Board thickness | about 1.0 | A |
 | Mounting holes | Two, 22.0 apart, 2.0 from the header edge | F |
@@ -86,16 +86,19 @@ Inner 26.87 × 30.8. Outer 34.04 × 38.07 × 15.22. All M.
 
 ## 5. Fasteners
 
-M2. Values from the file (F): clearance hole 2.2; head 4.5 × 1.6; self-tapping pilot 1.7, depth 6.0; heat-set insert hole 3.2, depth 4.2. The `fastener` parameter selects `tapping` (current default) or `insert`.
+M2. Values from the file (F): clearance hole 2.2; head 4.5 × 1.6 (the clip countersink uses 4.5 at 90°); self-tapping pilot 1.7, depth 6.0; heat-set insert hole 3.2, depth 4.2. The `fastener` parameter selects `insert` (current default) or `tapping`.
 
 ## 6. Depth budget
 
 | Stack | Sum |
 | --- | --- |
-| Radar half: air gap 1.0 + radar 2.7 + floor 0.4 + XIAO 4.5 | 8.6 |
-| Battery half: cell 8.25 + clearance 0.4 | 8.65 |
-| Case: window 0.8 + cavity 8.65 + lid 1.6 | 11.05 |
+| Battery half: front 1.2 + cell 8.25 + clearance 0.4 | 9.85 |
+| Radar half: window 0.8 + air gap 1.25 + radar 2.7 + carrier 5.0 + clearance 0.1 | 9.85 |
+| Carrier: floor 0.4 + XIAO 4.5 + 0.1 | 5.0 |
+| Case: shell 9.85 + lid 1.6 | 11.45 |
 | Clip: base 1.6 + gap 2.4 + arm 2.2 | 6.2 |
+
+The battery half sets the shell depth. The front over the cell is 1.2 to protect the cell. The radar half gets the difference as air gap. The file computes these values and has an `assert` for the air gap and for the cell clearance.
 
 Radar plus XIAO (7.2) and the cell (8.25) are almost equal in depth. This is why they sit side by side.
 
@@ -111,25 +114,30 @@ Layout B, side by side. Viewed from the front, clip at the top:
  └───────USB────────┴──┴──────────────┘
 ```
 
-Target: about 56 × 33 × 11 without the clip, about 17 with the clip, case mass about 10 g in PETG.
+As built in the file (2026-11-12): 56.7 × 33.4 × 11.45 without the clip (55.5 wide with `fastener = "tapping"`). Shell, lid and carrier are 8.9 cm³, about 11 g in PETG. With `radar_rotated = true` the width is 60.7.
 
 Parts:
 
 | Part | Function | Print |
 | --- | --- | --- |
 | `shell` | Front, walls, spine with two screw bosses and a wire notch, radar pads | Front face down |
-| `lid` | Flat 1.6 plate with a step ring inside the walls | Outside face down |
+| `lid` | Flat 1.6 plate with a step ring inside the walls and a post that holds the XIAO down | Outside face down |
 | `carrier` | Frame on the back of the radar with a 0.4 floor and the XIAO pocket | Floor down |
 | `clip` | J-hook with a base strip along the spine | On its side |
 
-- Two M2 × 8 countersunk screws go through the clip base and the lid into the spine bosses. The clip load goes into the spine.
+- Two M2 countersunk screws go through the clip base and the lid into the spine bosses. The clip load goes into the spine. The file prints the maximum screw length: 7.4 with `insert` (use M2 × 6), 9.2 with `tapping` (use M2 × 8). An M2 × 8 screw touches the bottom of the insert hole.
 - The radar has no screws. It sits on 1.0 pads, and the carrier and lid clamp it.
-- The radar bay corners have a 1.0 radius, which fits any board corner radius.
-- No battery shim. The bay is the size of the cell.
+- The two outer radar bay corners have the radius `radar_corner_r` (1.5), not the case inner radius (3.6). The radar margin stays 0.2 and the outline does not change. The wall at these two corners is 0.53 at its thinnest point, and 0.33 in the one layer from z = 0.8 to 1.0 (front chamfer).
+- No battery shim. The bay is the size of the cell. Two stop ribs keep the cell out of the lead space at the top.
+- The XIAO has its parts toward the lid and its board on the carrier floor. Its board edge is against the bottom wall, so the wall takes the pull of the plug and the pocket end takes the push. (A: this orientation is a design choice, not a measurement.)
+- The USB-C slot is a U notch that is open to the lid, because the wall over the connector would be 0.2 high.
+- The lid ring has gaps at the spine ends, at the USB-C connector, and over the cell. The ring arc comes inside the cell corners, so a full ring would press on the cell.
+- The carrier has a rebate for the lid ring on its three outer edges.
+- The carrier floor sits on the tallest parts on the back of the radar. (A: those parts can take a light load.)
 
 Selected touches:
 
-- Pebble outline: corner radius 5 in the plan view, 1.0 chamfers on the front and back edges. A radius of 5 fits a board with corners of about 3 with no added width. The board corner radius is not known, so the file must check this fit with an `assert` on a `radar_corner_r` parameter, and add margin if the value is smaller.
+- Pebble outline: corner radius 5 in the plan view, 1.0 chamfers on the front and back edges. The radar bay does not follow this radius at its outer corners (see above), so the board corner radius adds no width. The cell bay corners and the lid ring keep the case inner radius.
 - Lens outline: a 0.2 groove on the front that traces the radar window. A raised rim was rejected because the shell prints front face down.
 - Reflective strip recess: 0.2 deep on the front of the battery half. Never over the radar.
 - LED window: a 0.4 thin spot in the bottom wall next to the USB slot.
@@ -137,7 +145,29 @@ Selected touches:
 - Step joint: the lid ring goes 1.0 into the shell, with two detent bumps at the short ends.
 - "UP" mark on the outside of the lid.
 
-Parameters that must stay: `part`, `fastener`, `radar_rotated` (turns the radar bay 90° for the beam axis), clip gap.
+Clip, as built in the file (2026-11-13): 16 wide, 6.2 deep, 1.9 cm³, about 2.5 g in PETG. The top of the bend is level with the top of the case. The tether tab is 3.6 above the case. The tip is 0.2 below the case.
+
+- Base 1.6 with five sawtooth ribs, 0.4 high. The steep face is toward the bend: the band goes in easily, and the unit does not move up.
+- Bend: the inside is a full half circle with radius `clip_gap` / 2.
+- Arm: 2.2 at the bend, 1.4 at the tip, length `clip_arm_len` (28.5). The tip is flared 30° for 1.5. A 0.6 lip with 45° faces is 1.3 from the tip. The gap at the lip is 1.8.
+- Two 5.0 holes in the arm, in line with the screws. The screw head (4.5) and the driver go through them, because the gap is smaller than the screw length. The screw heads are in countersinks in the base, not on the skin side. 0.45 of base stays below each countersink.
+- The two bed-side edges have a 0.4 chamfer made of 0.2 steps, one step for each layer.
+- The file has an `assert`: the strain at the arm root for a 2.0 opening must be 1.5% or less. The value is 0.81%. (A: the 1.5% limit for PETG is not from a datasheet.)
+
+Clip rules (D: snap-fit guides and published clip designs, 2026-11-13):
+
+- The layers must follow the hook profile. A clip that bends across the layers splits at the root.
+- No sharp inside corner at the root.
+- Root strain is about `3 × opening × thickness / (2 × length²)`. A longer or thinner arm decreases it.
+- The gap must be at least the fabric thickness. The lip and the ribs hold the unit; a squeeze does not, because PETG creeps.
+- Lead-in 25° to 35°. A catch face of 45° to 70° can be removed again.
+- For a cap, use the same clip on the adjuster strap with a different `clip_gap`.
+
+Risks: the 5.0 hole near the bend is in the area of highest strain. The arm has no stop against too much opening.
+
+Parameters that must stay: `part`, `fastener`, `radar_rotated` (turns the radar bay 90° for the beam axis), `radar_corner_r`, `clip_gap`, `clip_arm_len`.
+
+Corner fit rule: a part with corner radius `rc` fits a bay corner of radius `r` when its margin to both walls is at least `(r - rc) × (1 - 1/√2)`. The file uses this for the radar (with `r` = `radar_bay_r`) and the cell. With a bay radius of 1.5 and a margin of 0.2, a board corner radius down to 0.8 fits.
 
 ## 8. Rejected
 
@@ -162,12 +192,24 @@ Do not repeat these.
 OpenSCAD is at `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`. It is not on the PATH.
 
 - Render each part with `-o part.stl -D 'part="shell"'` and look for errors.
-- Check for overlap: `use <enclosure.scad>` in a scratch file, intersect two placed parts (or a part and a box that models a component), export a binary STL, and compute the volume. Zero volume means no overlap. `use` does not import variables, so repeat the constants in the scratch file.
+- Look at the fit with `-D 'part="assembly"'`.
+- Check for overlap with a scratch file outside the repository:
+
+  ```
+  include </full/path/hardware/enclosure.scad>
+  part = "none";
+  intersection() { place_lid() lid(); cell_model(); }
+  ```
+
+  Export a binary STL. An empty result means no overlap. The file has `place_lid()`, `place_carrier()`, `radar_model()`, `xiao_model()` and `cell_model()` for this.
+- Check each pair: shell, lid and carrier with each other and with each component model. Check `place_clip() clip();` with the lid and with the shell.
+- Two results are not zero and are correct: shell with lid is 0.15 mm³ (the detent bumps press 0.1 into the wall), and shell with `xiao_model()` is 0.06 mm³ (the model has square USB corners; the slot corners are round).
+- Shell with `radar_model()` gives a few facets with zero volume: the radar touches the top of the pads at z = 2.05. This is correct.
 - Do not commit STL or 3MF exports.
 
 ## 11. Open questions
 
-- Radar board: corner radius (Josh is not sure of the value), board thickness, and which side is the wide beam axis.
+- Radar board: corner radius (1.5 is an estimate), board thickness, and which side is the wide beam axis.
 - Mass of the radar, XIAO and cell (not weighed).
 - XIAO: which face is toward the lid, and where the LEDs are in relation to the bottom wall.
 - Wire routes between the radar pads, the XIAO and the cell.
@@ -175,6 +217,7 @@ OpenSCAD is at `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`. It is not o
 
 ## 12. Later options
 
+- A spring-steel or TPU insert for the clip, if the PETG arm loses grip.
 - A cap clip variant, and a concave back with a radius of about 100 for the cap (costs about 1.0 of depth).
 - A power switch.
 - A rear light in the battery half.

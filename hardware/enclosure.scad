@@ -1,348 +1,581 @@
-// Gotcha Six wearable enclosure
+// Gotcha Six wearable enclosure — layout B (side by side)
 // C4001 mmWave + Seeed XIAO nRF52840 Sense + 500 mAh LiPo
 //
-// part: "shell" | "back" | "shim" | "xiao_shim" | "all"
-// fastener: "insert" | "tapping" — four lid M2 holes only
-//   insert  : 3.2 mm holes for M2 heat-set inserts
+// Read hardware/SPEC.md before you change this file.
+//
+// part: "shell" | "lid" | "carrier" | "clip" | "all" | "assembly" | "none"
+//   all      : print plate, each part in its print orientation
+//   assembly : parts in place with component models (view only)
+//   none     : nothing; for scratch files that `include` this file
+// fastener: "tapping" | "insert" — the two spine holes
 //   tapping : 1.7 mm holes for M2 self-tapping screws
-// Radar bosses are always printed M2 taps.
+//   insert  : 3.2 mm holes for M2 heat-set inserts
 //
-// Battery is the 500 mAh cell, same orientation as the XIAO:
-// long axis along Y, USB-end of the cell at +Y (USB-C wall).
-//
-// Units: millimetres. Origin at the outer front face, centred on X/Y.
+// Worn orientation, viewed from the front (the radar side):
+//   +Y is up (the clip hooks over the band there), USB-C is in the -Y wall.
+//   Radar and XIAO are at -X, the cell is at +X, the spine is between them.
+// Origin: outer front face at z = 0, centred on X and Y. The lid is at +Z.
+// Units: millimetres.
 
-part = "back";
-fastener = "tapping";
+part = "all";
+fastener = "insert";
+// Turn the radar bay 90 degrees if the wide beam axis needs it.
+radar_rotated = false;
+// Clip: space for the band, and arm length from the bend to the tip.
+// The gap must not be less than the fabric thickness (PETG creeps under load).
+clip_gap = 2.40;
+clip_arm_len = 28.50;
 
 /* [Hidden] */
 $fn = 48;
+eps = 0.01;
 
-// --- Components ---
-radar_w = 26.00;
-radar_h = 30.00;
+// --- Components (see SPEC.md section 2) ---
+radar_pcb_w = 26.00;
+radar_pcb_h = 30.00;
 radar_z = 2.70;
-radar_hole_span = 22.00;
-radar_hole_inset = 2.00;
+// Estimate, not measured. The outer radar bay corners use this radius.
+radar_corner_r = 1.50;
+radar_w = radar_rotated ? radar_pcb_h : radar_pcb_w;
+radar_h = radar_rotated ? radar_pcb_w : radar_pcb_h;
 
 xiao_w = 18.05;
 xiao_h = 21.05;
+xiao_pcb_t = 1.00;
 xiao_board_z = 3.00;
-xiao_bay_z = 4.50;
+xiao_usb_z = 4.50;
 xiao_fit = 0.30;
-xiao_lip_in = 1.20;
-xiao_lip_t = 1.20;
-
-// 500 mAh: 27.5 along Y (with XIAO), 20.5 along X, 8.25 thick
-batt_x = 20.50;
-batt_y = 27.50;
-batt_z = 8.25;
-
-// --- Shell sizing ---
-wall = 2.40;
-window_t = 1.60;
-corner_r = 6.00;
-edge_r = 1.20;
-fit = 0.40;
-batt_clear = 0.40;
-
-wire_notch_w = 14.00;
-wire_notch_h = 2.50;
-wire_notch_d = 1.20;
 
 usb_shell_w = 8.94;
 usb_shell_h = 3.26;
 usb_shell_r = 1.30;
 usb_clear = 0.25;
-usb_slot_w = usb_shell_w + usb_clear;
-usb_slot_h = usb_shell_h + usb_clear;
-usb_slot_r = usb_shell_r + usb_clear / 2;
+usb_past_edge = 0.20;
+usb_plug_w = 12.50;
+usb_plug_h = 7.00;
 
-clip_t = 2.80;
-clip_gap = 2.40;
-clip_lip = 1.60;
+batt_x = 20.50;
+batt_y = 27.50;
+batt_z = 8.25;
+batt_corner_r = 0.50;
+batt_clear = 0.40; // cell to lid; never less
+batt_side_fit = 0.30;
+batt_lead_space = 2.00; // above the cell, for the leads
+
+// --- Case ---
+wall = 1.40;
+window_t = 0.80; // radar window; see SPEC.md section 3
+batt_front_t = 1.20; // front wall over the cell
+corner_r = 5.00;
+edge_chamfer = 1.00;
+fit = 0.40; // total, radar and carrier in their bay
+min_air_gap = 1.00; // antenna face to window
+
+lid_t = 1.60;
+lid_chamfer = 0.80;
+ring_w = 0.80;
+ring_z = 1.00;
+ring_clear = 0.15;
+detent = 0.25;
+
+carrier_floor = 0.40;
+carrier_clear = 0.10; // carrier top to lid
+
+pad_w = 1.40;
+pad_len = 5.00;
+pad_y = 8.00;
+
+web_t = 1.00; // spine side walls
+boss_y = 10.00;
+notch_w = 6.00;
+notch_z = 3.50;
+
+groove_z = 0.20;
+groove_w = 0.60;
+strip_w = 16.00;
+strip_h = 24.00;
+
+led_d = 2.00;
+led_wall = 0.40;
+
+// Clip (see SPEC.md section 7). It prints on its side.
+clip_w = 16.00;
+clip_base_t = 1.60;
+clip_arm_t0 = 2.20; // arm at the bend
+clip_arm_t1 = 1.40; // arm at the tip
+clip_flare = 1.50;
+clip_flare_a = 30;
+clip_lip = 0.60;
+clip_rib = 0.40;
+clip_edge = 0.40; // chamfer on the two bed-side edges, in 0.2 steps
+clip_open = 2.00; // arm opening for the strain check
+clip_max_strain = 0.015;
+tether_d = 2.50;
 
 // M2
-m2_clear = 2.20;
 m2_head_d = 4.50;
-m2_head_h = 1.60;
-m2_insert_d = 3.20;
-m2_insert_z = 4.20;
+m2_clear = 2.20;
 m2_tap_d = 1.70;
 m2_tap_z = 6.00;
-boss_od = 7.20;
-boss_stack_gap = 1.00; // air between electronics well and each cylinder
-
-radar_boss_od = 4.40;
-radar_tap_d = 1.70;
-
-// Electronics well (radar / XIAO / cell). Cylinders sit outside this.
-inner_w = max(radar_w + fit, batt_x + batt_clear);
-inner_h = max(radar_h + fit, batt_y + batt_clear);
-function boss_x() = inner_w / 2 + boss_stack_gap + boss_od / 2;
-function boss_y() = inner_h / 2 - 1.00;
-function boss_xs() = [-boss_x(), boss_x()];
-function boss_ys() = [-boss_y(), boss_y()];
-outer_w = 2 * (boss_x() + boss_od / 2 + 0.50);
-outer_h = 2 * (max(inner_h / 2 + wall, boss_y() + boss_od / 2 + 0.50));
-clip_w = 2 * boss_x() - boss_od - 1.60;
-
-cavity_z = radar_z + xiao_bay_z + batt_z + batt_clear;
-shell_z = window_t + cavity_z;
-lid_t = 2.40;
+m2_insert_d = 3.20;
+m2_insert_z = 4.20;
 
 assert(fastener == "insert" || fastener == "tapping", "fastener must be \"insert\" or \"tapping\"");
 
-function m2_pilot_d() = fastener == "insert" ? m2_insert_d : m2_tap_d;
-function m2_pilot_z() = fastener == "insert" ? m2_insert_z : m2_tap_z;
-function inner_r() = max(0.1, corner_r - wall);
-function nest_r(clear) = max(0.1, inner_r() - clear);
+function pilot_d() = fastener == "insert" ? m2_insert_d : m2_tap_d;
+function pilot_z() = fastener == "insert" ? m2_insert_z : m2_tap_z;
+spine_w = fastener == "insert" ? 5.60 : 4.40;
 
-function radar_hole_x() = radar_hole_span / 2;
-function radar_hole_y() = -(radar_h / 2 - radar_hole_inset);
+// --- Derived layout ---
+inner_r = corner_r - wall;
+// A part with corner radius rc fits a bay corner of radius r when its
+// margin to both walls is at least (r - rc) * (1 - 1/sqrt(2)).
+function corner_margin(rc, r = inner_r) = max(0, (r - rc) * (1 - 1 / sqrt(2)));
+
+// The outer radar bay corners are not rounder than the board corners.
+radar_bay_r = min(inner_r, radar_corner_r);
+radar_margin = max(fit / 2, corner_margin(radar_corner_r, radar_bay_r));
+// The cell must also clear the lid ring.
+batt_margin = max(batt_side_fit, corner_margin(batt_corner_r), ring_w + ring_clear + 0.15);
+
+inner_h = max(radar_h + 2 * radar_margin, batt_margin + batt_y + batt_lead_space);
+inner_w = radar_margin + radar_w + fit / 2 + spine_w + batt_side_fit + batt_x + batt_margin;
+outer_w = inner_w + 2 * wall;
+outer_h = inner_h + 2 * wall;
+
+x_left = -inner_w / 2;
+radar_cx = x_left + radar_margin + radar_w / 2;
+spine_x0 = radar_cx + radar_w / 2 + fit / 2;
+spine_cx = spine_x0 + spine_w / 2;
+batt_x0 = spine_x0 + spine_w;
+cell_cx = batt_x0 + batt_side_fit + batt_x / 2;
+cell_cy = -inner_h / 2 + batt_margin + batt_y / 2;
+
+carrier_z = carrier_floor + xiao_usb_z + 0.10;
+shell_z = max(
+  window_t + min_air_gap + radar_z + carrier_z + carrier_clear,
+  batt_front_t + batt_z + batt_clear
+);
+air_gap = shell_z - window_t - radar_z - carrier_z - carrier_clear;
+z_radar = window_t + air_gap;
+z_carrier = z_radar + radar_z;
+
+assert(air_gap >= min_air_gap - eps, "air gap to the radar window is too small");
+assert(shell_z - batt_front_t - batt_z >= batt_clear - eps, "the lid is too close to the cell");
+
+// XIAO: parts toward the lid, board edge against the -Y wall.
+xiao_cx = radar_cx;
+xiao_y0 = -inner_h / 2;
+z_xiao = z_carrier + carrier_floor;
+usb_z_mid = z_xiao + xiao_pcb_t + usb_shell_h / 2;
+usb_slot_w = usb_shell_w + usb_clear;
+usb_slot_z0 = usb_z_mid - (usb_shell_h + usb_clear) / 2;
+xiao_post_z = shell_z - (z_xiao + xiao_board_z) - 0.10;
+
+clip_base_y0 = -boss_y - 5;
+// Strain at the arm root when the tip opens by clip_open (beam formula).
+clip_strain = 3 * clip_open * clip_arm_t0 / (2 * clip_arm_len * clip_arm_len);
+assert(clip_strain <= clip_max_strain, "the clip arm is too short or too thick");
+// The longest screw that does not touch the bottom of the spine hole.
+clip_screw_max = clip_base_t + lid_t + pilot_z();
 
 module rounded_rect(size, r) {
-  w = size[0];
-  h = size[1];
-  rr = min(r, w / 2, h / 2);
-  hull() {
+  rr = max(0.05, min(r, size[0] / 2 - eps, size[1] / 2 - eps));
+  hull()
     for (sx = [-1, 1], sy = [-1, 1])
-      translate([sx * (w / 2 - rr), sy * (h / 2 - rr)])
+      translate([sx * (size[0] / 2 - rr), sy * (size[1] / 2 - rr)])
         circle(r = rr);
+}
+
+// Extrusion with a chamfer on the z = 0 edge (the bed side).
+module chamfered_slab(size, r, h, c) {
+  hull() {
+    linear_extrude(height = eps)
+      rounded_rect([size[0] - 2 * c, size[1] - 2 * c], r - c);
+    translate([0, 0, c])
+      linear_extrude(height = h - c)
+        rounded_rect(size, r);
   }
 }
 
-module rounded_box(size, r) {
-  linear_extrude(height = size[2])
-    rounded_rect([size[0], size[1]], r);
+// The part of the inner profile between x0 and x1, from z0 to the top.
+module bay(x0, x1, z0, r = inner_r) {
+  intersection() {
+    translate([0, 0, z0])
+      linear_extrude(height = shell_z - z0 + eps)
+        rounded_rect([inner_w, inner_h], r);
+    translate([x0, -outer_h, 0])
+      cube([x1 - x0, 2 * outer_h, shell_z + 1]);
+  }
 }
 
-module filleted_box(size, r) {
-  rr = min(r, size[0] / 2 - 0.2, size[1] / 2 - 0.2, size[2] / 2 - 0.2);
-  translate([0, 0, size[2] / 2])
-    minkowski() {
-      cube([size[0] - 2 * rr, size[1] - 2 * rr, size[2] - 2 * rr], center = true);
-      sphere(r = rr, $fn = 24);
+module boss_positions() {
+  for (y = [-boss_y, boss_y])
+    translate([spine_cx, y])
+      children();
+}
+
+// USB-C slot and plug recess, in shell coordinates. The lid uses it also.
+module usb_cuts() {
+  // Slot, open to the lid: the wall over the connector would be a sliver.
+  translate([xiao_cx, -outer_h / 2 + wall / 2, 0])
+    hull() {
+      for (sx = [-1, 1])
+        translate([sx * (usb_slot_w / 2 - usb_shell_r), 0, usb_slot_z0 + usb_shell_r])
+          rotate([90, 0, 0])
+            cylinder(r = usb_shell_r, h = wall + 1, center = true);
+      translate([0, 0, shell_z + lid_t])
+        cube([usb_slot_w, wall + 1, eps], center = true);
     }
-}
-
-module corner_boss_solids() {
-  for (x = boss_xs(), y = boss_ys())
-    translate([x, y, window_t])
-      cylinder(d = boss_od, h = cavity_z + 0.01);
-}
-
-module radar_boss_solids() {
-  for (sx = [-1, 1])
-    translate([sx * radar_hole_x(), radar_hole_y(), window_t]) {
-      cylinder(d = radar_boss_od + 2.0, h = 1.00);
-      cylinder(d = radar_boss_od, h = radar_z);
-    }
+  // Recess for the plug body. It leaves window_t of wall at the slot.
+  translate([xiao_cx - usb_plug_w / 2, -outer_h / 2 - 1, usb_z_mid - usb_plug_h / 2])
+    cube([usb_plug_w, 1 + wall - window_t, usb_plug_h]);
 }
 
 module shell() {
+  cell_top = cell_cy + batt_y / 2;
   difference() {
-    filleted_box([outer_w, outer_h, shell_z], edge_r);
+    chamfered_slab([outer_w, outer_h], corner_r, shell_z, edge_chamfer);
 
-    // Hollow the tub but keep corner and radar bosses
+    bay(x_left - 1, spine_x0, window_t, radar_bay_r); // radar and XIAO
+    bay(batt_x0, inner_w, batt_front_t); // cell
+
+    // Wire channel in the spine, between the two webs. The bosses stay.
     difference() {
-      translate([0, 0, window_t])
-        linear_extrude(height = cavity_z + 0.02)
-          rounded_rect([inner_w, inner_h], inner_r());
-      corner_boss_solids();
-      radar_boss_solids();
+      bay(spine_x0 + web_t, batt_x0 - web_t, batt_front_t);
+      translate([0, 0, batt_front_t - 1])
+        linear_extrude(height = shell_z + 2)
+          boss_positions()
+            circle(d = spine_w);
     }
+    // Wire notch across the spine, cell to XIAO.
+    translate([spine_x0 - eps, -notch_w / 2, shell_z - notch_z])
+      cube([spine_w + 2 * eps, notch_w, notch_z + eps]);
 
-    translate([
-      0,
-      -inner_h / 2 + wire_notch_h / 2 - 0.01,
-      window_t + radar_z / 2
-    ])
-      cube([wire_notch_w, wire_notch_h + wall, wire_notch_d + radar_z], center = true);
+    boss_positions()
+      translate([0, 0, shell_z - pilot_z()])
+        cylinder(d = pilot_d(), h = pilot_z() + eps);
 
-    // USB on the edge opposite the radar header, wires, and C4001 screws
-    usb_z_mid = window_t + radar_z + xiao_bay_z / 2;
-    translate([0, outer_h / 2 - wall / 2, usb_z_mid])
+    usb_cuts();
+
+    // Thin spot for the XIAO LED, from the inside of the -Y wall.
+    translate([xiao_cx + usb_plug_w / 2 + led_d / 2 + 0.8, -inner_h / 2 + eps, usb_z_mid])
       rotate([90, 0, 0])
-        linear_extrude(height = wall + 0.4, center = true)
-          rounded_rect([usb_slot_w, usb_slot_h], usb_slot_r);
+        cylinder(d = led_d, h = wall - led_wall + eps);
 
-    for (x = boss_xs(), y = boss_ys()) {
-      translate([x, y, shell_z - m2_pilot_z() + 0.01])
-        cylinder(d = m2_pilot_d(), h = m2_pilot_z() + 0.02);
-      if (fastener == "insert")
-        translate([x, y, shell_z - 0.49])
-          cylinder(d1 = m2_insert_d, d2 = m2_insert_d + 1.0, h = 0.50);
-    }
-
-    for (sx = [-1, 1])
-      translate([sx * radar_hole_x(), radar_hole_y(), window_t - 0.2])
-        cylinder(d = radar_tap_d, h = radar_z + 2.0);
+    // Front details, one layer deep. The front prints on the bed.
+    translate([radar_cx, 0, -eps])
+      linear_extrude(height = groove_z + eps)
+        difference() {
+          rounded_rect([radar_w - 2, radar_h - 2], 2.5);
+          rounded_rect([radar_w - 2 - 2 * groove_w, radar_h - 2 - 2 * groove_w], 2.5 - groove_w);
+        }
+    translate([cell_cx, 0, -eps])
+      linear_extrude(height = groove_z + eps)
+        rounded_rect([strip_w, strip_h], 3);
   }
+
+  // Radar seat: four pads under the board edges give the air gap.
+  for (y = [-pad_y, pad_y]) {
+    translate([x_left - eps, y - pad_len / 2, window_t - eps])
+      cube([radar_margin + pad_w, pad_len, air_gap + eps]);
+    translate([spine_x0 - fit / 2 - pad_w, y - pad_len / 2, window_t - eps])
+      cube([fit / 2 + pad_w + eps, pad_len, air_gap + eps]);
+  }
+
+  // Stop ribs keep the cell out of the lead space.
+  for (sx = [-1, 1])
+    translate([cell_cx + sx * (batt_x / 2 - 3.0) - 3.0, cell_top + batt_side_fit, batt_front_t - eps])
+      cube([6.0, 1.0, 3.0]);
 }
 
-module clothing_clip() {
-  // Open J-hook: arm parallel to the lid, entry at the header end (-Y).
-  // The tip lip hangs toward the lid but leaves a slot so fabric can slide on.
-  z0 = 0;
-  r = 0.60;
-  entry = 1.20;
-  spine_y = inner_h / 2 - 4.0;
-  arm_bottom = -inner_h / 2 + 3.0;
-  arm_len = spine_y - arm_bottom;
-  module clip_bar(x, y, z, sx, sy, sz) {
-    rr = min(r, sx / 2, sy / 2, sz / 2);
-    hull()
-      for (dx = [-1, 1], dy = [-1, 1], dz = [-1, 1])
-        translate([
-          x + dx * (sx / 2 - rr),
-          y + dy * (sy / 2 - rr),
-          z + dz * (sz / 2 - rr)
-        ])
-          sphere(r = rr, $fn = 16);
-  }
-  hull() {
-    clip_bar(0, spine_y, z0 + clip_t / 2, clip_w, 10.0, clip_t);
-    clip_bar(0, spine_y, z0 + clip_gap + clip_t / 2, clip_w, 8.0, clip_t);
-  }
-  clip_bar(0, (spine_y + arm_bottom) / 2, z0 + clip_gap + clip_t / 2, clip_w, arm_len, clip_t);
-  clip_bar(
-    0,
-    arm_bottom + clip_lip / 2,
-    z0 + entry + (clip_gap - entry) / 2,
-    clip_w,
-    clip_lip,
-    clip_gap - entry
-  );
-}
-
-module back() {
+// Local z = 0 is the inside face. The ring goes down into the shell.
+module lid() {
   difference() {
     union() {
-      filleted_box([outer_w, outer_h, lid_t], edge_r);
-
-      // Locate ring into the shell mouth
-      translate([0, 0, -1.00])
-        linear_extrude(height = 1.00)
-          rounded_rect([inner_w - 0.40, inner_h - 0.40], max(0.1, corner_r - wall - 0.2));
-
       translate([0, 0, lid_t])
-        clothing_clip();
+        mirror([0, 0, 1])
+          chamfered_slab([outer_w, outer_h], corner_r, lid_t, lid_chamfer);
+
+      // Step ring inside the walls. It is a ring, not a plate.
+      difference() {
+        translate([0, 0, -ring_z])
+          linear_extrude(height = ring_z + eps) {
+            difference() {
+              rounded_rect([inner_w - 2 * ring_clear, inner_h - 2 * ring_clear], inner_r - ring_clear);
+              rounded_rect(
+                [inner_w - 2 * (ring_clear + ring_w), inner_h - 2 * (ring_clear + ring_w)],
+                inner_r - ring_clear - ring_w
+              );
+            }
+          }
+        // Gaps for the spine ends and for the USB-C connector.
+        translate([spine_x0 - 0.3, -outer_h, -ring_z - 1])
+          cube([spine_w + 0.6, 2 * outer_h, ring_z + 1 + eps]);
+        translate([xiao_cx - usb_plug_w / 2, -outer_h / 2, -ring_z - 1])
+          cube([usb_plug_w, wall + ring_w + 1, ring_z + 1 + eps]);
+        // No ring over the cell: the ring arc comes inside the cell corners.
+        translate([cell_cx, cell_cy, -ring_z - 1])
+          linear_extrude(height = ring_z + 1 + eps)
+            offset(delta = 0.25)
+              rounded_rect([batt_x, batt_y], batt_corner_r);
+      }
+
+      // Detent bumps on the outer face of the ring at the short ends.
+      for (sx = [-1, 1])
+        translate([sx * (inner_w / 2 - ring_clear), 0, -ring_z / 2])
+          scale([detent / 0.5, 3, 1])
+            sphere(d = 1.0, $fn = 24);
+
+      // Post holds the XIAO down on its shield can.
+      translate([xiao_cx, xiao_y0 + xiao_h * 0.6, -xiao_post_z])
+        cylinder(d = 3.5, h = xiao_post_z + eps);
     }
 
-    // M2 through the lid only — corners sit outside the J-hook
-    for (x = boss_xs(), y = boss_ys()) {
-      translate([x, y, -1.20])
-        cylinder(d = m2_clear, h = lid_t + 1.40);
-      translate([x, y, lid_t - m2_head_h])
-        cylinder(d = m2_head_d, h = m2_head_h + 0.2);
-      translate([x, y, -1.20])
-        cylinder(d = boss_od + 0.50, h = 1.15);
+    boss_positions()
+      translate([0, 0, -ring_z - 1])
+        cylinder(d = m2_clear, h = lid_t + ring_z + 2);
+
+    translate([0, 0, -shell_z])
+      usb_cuts();
+
+    // "UP" mark, one layer deep. The outside prints on the bed.
+    translate([cell_cx, inner_h / 2 - 9, lid_t - groove_z]) {
+      linear_extrude(height = groove_z + eps)
+        text("UP", size = 5, halign = "center", valign = "top");
+      translate([0, 1.5, 0])
+        linear_extrude(height = groove_z + eps)
+          polygon([[-3, 0], [3, 0], [0, 4]]);
     }
   }
 }
 
-module shim() {
-  // Cradle in the radar-sized well. Battery USB-end sits at +Y.
-  ow = inner_w - 0.50;
-  oh = inner_h - 0.50;
-  pocket_w = batt_x + 0.30;
-  pocket_h = batt_y + 0.30;
-  pocket_cy = oh / 2 - pocket_h / 2;
-
-  difference() {
-    linear_extrude(height = batt_z)
-      rounded_rect([ow, oh], 1.2);
-
-    translate([0, pocket_cy, -0.01])
-      linear_extrude(height = batt_z + 0.02)
-        rounded_rect([pocket_w, pocket_h], 0.8);
-
-    translate([0, oh / 2, batt_z / 2])
-      cube([pocket_w, 4.0, batt_z + 0.1], center = true);
-
-    for (x = boss_xs(), y = boss_ys())
-      translate([x, y, -0.01])
-        cylinder(d = boss_od + 0.60, h = batt_z + 0.02);
-  }
-}
-
-module xiao_shim() {
-  clear = 0.20;
-  ow = inner_w - 2 * clear;
-  oh = inner_h - 2 * clear;
+// Sits on the back of the radar. Local z = 0 is the bottom of the floor,
+// local origin is the centre of the radar bay.
+module carrier() {
+  cw = radar_w;
+  ch = radar_h;
   pocket_w = xiao_w + xiao_fit;
-  pocket_h = xiao_h + xiao_fit;
-  pocket_cy = oh / 2 - pocket_h / 2;
-  board_z = xiao_bay_z - xiao_lip_t;
+  pocket_y1 = xiao_y0 + xiao_h + xiao_fit; // +Y end of the XIAO, shell coords
+  side_x = pocket_w / 2;
+  rebate = ring_clear + ring_w + 0.25 - radar_margin;
+  top_z = carrier_z;
 
   difference() {
-    linear_extrude(height = xiao_bay_z)
-      rounded_rect([ow, oh], nest_r(clear));
+    linear_extrude(height = carrier_z)
+      rounded_rect([cw, ch], radar_corner_r);
 
-    // Board cavity; USB edge (+Y) stays open so the XIAO slides in under the lip
-    translate([0, pocket_cy, -0.01])
-      linear_extrude(height = board_z + 0.01)
-        rounded_rect([pocket_w, pocket_h], 0.6);
+    // XIAO pocket, open to the lid and to the -Y wall.
+    translate([-pocket_w / 2, -ch, carrier_floor])
+      cube([pocket_w, ch + pocket_y1, carrier_z]);
 
-    // Lip on the header/screw side (-Y) and both sides
-    translate([0, pocket_cy + xiao_lip_in / 2, board_z - 0.01])
-      linear_extrude(height = xiao_bay_z - board_z + 0.02)
-        rounded_rect([pocket_w - 2 * xiao_lip_in, pocket_h - xiao_lip_in], 0.5);
+    // Floor window under the battery pads of the XIAO.
+    translate([-5, -ch / 2 + 5, -eps])
+      cube([10, 10, carrier_floor + 2 * eps]);
 
-    translate([0, oh / 2, xiao_bay_z / 2])
-      cube([usb_slot_w + 0.6, 3.0, xiao_bay_z + 0.1], center = true);
+    // Wire bay on the outer side, from the radar pads to the XIAO edge pads.
+    translate([-cw, -ch / 2 + 6, -eps])
+      cube([cw - side_x + eps, 10, carrier_z + 2 * eps]);
 
-    // M2 through-holes on the C4001 pattern (header edge, opposite USB)
-    for (sx = [-1, 1]) {
-      translate([sx * radar_hole_x(), radar_hole_y(), -0.01])
-        cylinder(d = m2_clear, h = xiao_bay_z + 0.02);
-      translate([sx * radar_hole_x(), radar_hole_y(), xiao_bay_z - 0.80])
-        cylinder(d = 3.60, h = 0.90);
-    }
+    // Wire notch toward the spine, in line with the spine notch.
+    translate([side_x - eps, -notch_w / 2, top_z - notch_z + carrier_clear])
+      cube([cw, notch_w, notch_z]);
+
+    // Rebate for the lid ring along the three outer edges.
+    if (rebate > 0)
+      translate([0, 0, top_z - ring_z - 0.25])
+        linear_extrude(height = ring_z + 1)
+          difference() {
+            square([cw + 2, ch + 2], center = true);
+            // The kept area follows the ring arc at the outer corners.
+            translate([rebate / 2 + 3, 0])
+              rounded_rect([cw - rebate + 6, ch - 2 * rebate], inner_r - radar_margin - rebate);
+          }
   }
+}
+
+// 2D profile: x is the worn Y, y is the distance from the lid outer face.
+module clip_profile() {
+  bt = clip_base_t;
+  g = clip_gap;
+  bend_r = (bt + g + clip_arm_t0) / 2;
+  yc = outer_h / 2 - bend_r; // the bend is level with the top of the case
+  y_tip = yc - clip_arm_len;
+  y_lip = y_tip + clip_lip + 0.7;
+  tab_y = yc + g / 2 + 1.5 + tether_d / 2;
+
+  difference() {
+    union() {
+      difference() {
+        union() {
+          hull() {
+            translate([clip_base_y0 + bt / 2, bt / 2])
+              circle(d = bt);
+            translate([yc - 1, 0])
+              square([1, bt]);
+          }
+          // Bend and tether tab.
+          hull() {
+            translate([yc, bend_r])
+              circle(r = bend_r);
+            translate([tab_y, bend_r])
+              circle(r = tether_d / 2 + 1.5);
+          }
+          // Arm, with a taper to the tip.
+          polygon([
+            [yc, bt + g],
+            [yc, bt + g + clip_arm_t0],
+            [y_tip, bt + g + clip_arm_t1],
+            [y_tip, bt + g],
+          ]);
+          // Flared tip.
+          hull() {
+            translate([y_tip, bt + g + clip_arm_t1 / 2])
+              circle(d = clip_arm_t1);
+            translate([
+              y_tip - clip_flare * cos(clip_flare_a),
+              bt + g + clip_arm_t1 / 2 + clip_flare * sin(clip_flare_a),
+            ])
+              circle(d = clip_arm_t1);
+          }
+        }
+        // Band slot. The inside of the bend is a full half circle.
+        hull() {
+          translate([yc, bt + g / 2])
+            circle(d = g);
+          translate([y_tip - 10, bt])
+            square([1, g]);
+        }
+      }
+      // Lip on the arm, 45 degree faces.
+      polygon([
+        [y_lip - clip_lip - 0.2, bt + g + eps],
+        [y_lip - 0.2, bt + g - clip_lip],
+        [y_lip + 0.2, bt + g - clip_lip],
+        [y_lip + clip_lip + 0.2, bt + g + eps],
+      ]);
+      // Ribs on the base. The steep face is toward the bend, so the band
+      // goes in easily and the unit does not move up.
+      for (y = [-6:3:6])
+        translate([y, bt - eps])
+          polygon([[0, 0], [1.6, clip_rib + eps], [1.6, 0]]);
+    }
+    translate([tab_y, bend_r])
+      circle(d = tether_d);
+  }
+}
+
+// Print orientation: the profile is on the bed. Local x is the worn Y,
+// local y is the distance from the lid, local z is across the width.
+module clip() {
+  step = 0.2;
+  n = round(clip_edge / step);
+  cs_h = (m2_head_d - m2_clear) / 2;
+
+  difference() {
+    union() {
+      translate([0, 0, clip_edge - eps])
+        linear_extrude(height = clip_w - 2 * clip_edge + 2 * eps, convexity = 10)
+          clip_profile();
+      for (i = [0:n - 1], end = [0, 1])
+        translate([0, 0, end == 0 ? i * step : clip_w - (i + 1) * step])
+          linear_extrude(height = step, convexity = 10)
+            offset(delta = -(clip_edge - i * step))
+              clip_profile();
+    }
+    for (y = [-boss_y, boss_y])
+      translate([y, 0, clip_w / 2])
+        rotate([-90, 0, 0]) {
+          translate([0, 0, -eps])
+            cylinder(d = m2_clear, h = clip_base_t + 2 * eps);
+          // Countersink for the screw head.
+          translate([0, 0, clip_base_t - cs_h])
+            cylinder(d1 = m2_clear, d2 = m2_head_d, h = cs_h + eps);
+          // The screw and the driver go through the arm.
+          translate([0, 0, clip_base_t + clip_gap / 2])
+            cylinder(d = m2_head_d + 0.5, h = 20);
+        }
+  }
+}
+
+module place_clip() {
+  translate([spine_cx - clip_w / 2, 0, shell_z + lid_t])
+    rotate([90, 0, 90])
+      children();
+}
+
+module place_lid() {
+  translate([0, 0, shell_z])
+    children();
+}
+
+module place_carrier() {
+  translate([radar_cx, 0, z_carrier])
+    children();
+}
+
+// --- Component models, in shell coordinates (for checks and the assembly) ---
+module radar_model() {
+  translate([radar_cx, 0, z_radar])
+    linear_extrude(height = radar_z)
+      rounded_rect([radar_w, radar_h], radar_corner_r);
+}
+
+module xiao_model() {
+  translate([xiao_cx - xiao_w / 2, xiao_y0, z_xiao])
+    cube([xiao_w, xiao_h, xiao_board_z]);
+  translate([xiao_cx - usb_shell_w / 2, xiao_y0 - usb_past_edge, z_xiao + xiao_pcb_t])
+    cube([usb_shell_w, 7.3, usb_shell_h]);
+}
+
+module cell_model() {
+  translate([cell_cx, cell_cy, batt_front_t])
+    linear_extrude(height = batt_z)
+      rounded_rect([batt_x, batt_y], batt_corner_r);
+}
+
+module assembly() {
+  color("DimGray", 0.5) shell();
+  color("Gray", 0.4) place_lid() lid();
+  color("Orange") place_carrier() carrier();
+  color("Tomato") place_clip() clip();
+  color("Green") radar_model();
+  color("Blue") xiao_model();
+  color("Silver") cell_model();
 }
 
 module plate_all() {
-  gap = 14;
-  row_top_y = outer_h / 2 + gap;
-  row_bot_y = -(outer_h / 2 + gap + 24);
-
-  translate([-(outer_w / 2 + gap / 2), row_top_y, 0])
-    shell();
-  translate([outer_w / 2 + gap / 2, row_top_y, lid_t])
+  gap = 8;
+  shell();
+  translate([0, outer_h + gap, lid_t])
     rotate([180, 0, 0])
-      back();
-
-  translate([-(inner_w / 2 + gap + 6), row_bot_y, 0])
-    shim();
-  translate([inner_w / 2 + gap + 6, row_bot_y, 0])
-    xiao_shim();
+      lid();
+  translate([outer_w / 2 + gap + radar_w / 2, 0, 0])
+    carrier();
+  translate([-outer_w / 2 - gap - outer_h / 2 - 6, 0, 0])
+    clip();
 }
 
 if (part == "shell")
   shell();
-else if (part == "back")
-  rotate([180, 0, 0])
-    back();
-else if (part == "shim")
-  shim();
-else if (part == "xiao_shim")
-  xiao_shim();
+else if (part == "lid")
+  translate([0, 0, lid_t])
+    rotate([180, 0, 0])
+      lid();
+else if (part == "carrier")
+  carrier();
+else if (part == "clip")
+  clip();
 else if (part == "all")
   plate_all();
+else if (part == "assembly")
+  assembly();
 else
-  assert(false, "part must be shell|back|shim|xiao_shim|all");
+  assert(part == "none", "part must be shell|lid|carrier|clip|all|assembly|none");
 
-echo(str("fastener=", fastener, " pilot_d=", m2_pilot_d(), " pilot_z=", m2_pilot_z()));
-echo(str("outer_w=", outer_w));
-echo(str("outer_h=", outer_h));
-echo(str("shell_z=", shell_z));
-echo(str("wall=", wall, " corner_r=", corner_r, " edge_r=", edge_r));
-echo(str("usb_slot=", usb_slot_w, "x", usb_slot_h, " r=", usb_slot_r));
-echo(str("radar_bosses x=±", radar_hole_x(), " y=", radar_hole_y()));
-echo(str("lid_bosses x=±", boss_x(), " y=±", boss_y()));
-echo(str("clip_w=", clip_w));
-echo(str("xiao_shim_pocket=", xiao_w + xiao_fit, "x", xiao_h + xiao_fit, "x", xiao_bay_z));
-echo(str("xiao_shim_lip=", xiao_lip_in, "x", xiao_lip_t));
-echo(str("batt=", batt_x, "x", batt_y, "x", batt_z));
+echo(str("outer = ", outer_w, " x ", outer_h, " x ", shell_z + lid_t));
+echo(str("shell_z = ", shell_z, "  air_gap = ", air_gap));
+echo(str("radar_margin = ", radar_margin, "  batt_margin = ", batt_margin));
+echo(str("spine x = ", spine_cx, "  screws y = +/-", boss_y, "  fastener = ", fastener));
+echo(str("usb z = ", usb_z_mid, "  slot from z = ", usb_slot_z0));
+echo(str("clip strain = ", clip_strain, "  clip screw, max length = ", clip_screw_max));
