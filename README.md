@@ -81,6 +81,14 @@ $GSIMU,<ax>,<ay>,<az>,<gx>,<gy>,<gz>*\r\n
 
 Accel is m/s². Gyro is rad/s. Rate is about 25 Hz. The Rust core parses these; it does not yet fuse IMU into threat logic.
 
+## Power lines
+
+```
+$GSPWR,<volts>,<charging>*\r\n
+```
+
+Volts are the cell voltage. `charging` is `1` while the charger drives its status pin low, and `0` otherwise. The first line goes out at startup. Later lines go out every 30 seconds. This is not a charge percent. The pin is high both when the cell is full and when it is not charging.
+
 ## Build
 
 ### Firmware

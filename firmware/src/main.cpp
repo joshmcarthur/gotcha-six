@@ -3,6 +3,7 @@
 
 #include "bridge.hpp"
 #include "imu.hpp"
+#include "power.hpp"
 
 namespace {
 
@@ -11,9 +12,12 @@ BLEUart bleuart;
 BLEDis bledis;
 
 constexpr uint32_t kImuPeriodMs = 40; // 25 Hz
-// Longest wait for a radar line boundary before an IMU line goes out anyway.
+// Longest wait for a radar line boundary before a host line goes out anyway.
 constexpr uint32_t kImuMaxHoldMs = 4 * kImuPeriodMs;
+constexpr uint32_t kPowerPeriodMs = 30000;
 uint32_t last_imu_ms = 0;
+uint32_t last_power_ms = 0;
+bool power_armed = false;
 bool imu_ok = false;
 
 void start_advertising() {
@@ -139,6 +143,31 @@ void maybe_imu_sample() {
   (void)bridge.inject_host_line(reinterpret_cast<const uint8_t*>(line), n, ble_ok);
 }
 
+void maybe_power_sample() {
+  const uint32_t now = millis();
+  if (!power_armed) {
+    power_armed = true;
+    // The first report is due now. Later reports wait kPowerPeriodMs.
+    last_power_ms = now - kPowerPeriodMs;
+  }
+  const uint32_t elapsed = now - last_power_ms;
+  if (elapsed < kPowerPeriodMs) {
+    return;
+  }
+  if (bridge.radar_mid_line() && elapsed < kPowerPeriodMs + kImuMaxHoldMs) {
+    return;
+  }
+  last_power_ms = now;
+
+  char line[32];
+  size_t n = gotcha::power_format_sample(line, sizeof(line));
+  if (n == 0) {
+    return;
+  }
+  const bool ble_ok = Bluefruit.connected() && bleuart.notifyEnabled();
+  (void)bridge.inject_host_line(reinterpret_cast<const uint8_t*>(line), n, ble_ok);
+}
+
 } // namespace
 
 void setup() {
@@ -163,6 +192,7 @@ void setup() {
   start_advertising();
 
   imu_ok = gotcha::imu_begin();
+  gotcha::power_begin();
 }
 
 void loop() {
@@ -171,6 +201,7 @@ void loop() {
   drain_ble_host();
   service_radar_tx();
   maybe_imu_sample();
+  maybe_power_sample();
   service_usb_tx();
   service_ble_tx();
 }
