@@ -72,6 +72,9 @@ public:
   /// Pop next command byte for radar UART TX. Returns false if empty.
   bool pop_cmd_byte(uint8_t& out);
 
+  /// True once if a host sent `$GSOFF`. Clears the latch.
+  bool consume_power_off();
+
   RingBuffer& usb_fifo() { return usb_; }
   RingBuffer& ble_fifo() { return ble_; }
   const RingBuffer& ble_fifo() const { return ble_; }
@@ -99,6 +102,7 @@ private:
   size_t ble_line_len_;
   bool ble_discarding_;
   bool radar_mid_line_;
+  bool power_off_pending_;
 };
 
 } // namespace gotcha

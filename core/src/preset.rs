@@ -15,6 +15,9 @@ pub const GOTCHA_SIX_PRESET: &[&str] = &[
 /// Gap between preset commands, in milliseconds (matches the lab default).
 pub const PRESET_GAP_MS: u64 = 150;
 
+/// Host line firmware intercepts to enter System OFF. Not a C4001 command.
+pub const POWER_OFF_COMMAND: &str = "$GSOFF";
+
 /// Encode a host command as bytes with a trailing CRLF.
 ///
 /// Strips one existing trailing `\n` or `\r\n` before appending `\r\n`.
@@ -56,5 +59,12 @@ mod tests {
     #[test]
     fn preset_gap_is_150_ms() {
         assert_eq!(PRESET_GAP_MS, 150);
+    }
+
+    #[test]
+    fn power_off_command_is_gsoff() {
+        assert_eq!(POWER_OFF_COMMAND, "$GSOFF");
+        assert_eq!(encode_command_line(POWER_OFF_COMMAND), b"$GSOFF\r\n");
+        assert!(!GOTCHA_SIX_PRESET.contains(&POWER_OFF_COMMAND));
     }
 }

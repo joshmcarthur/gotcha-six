@@ -44,6 +44,7 @@ Mount the radar facing rearward. Beam is about 100° × 40°. Put the wide axis 
 - **USB CDC** and **BLE Nordic UART Service** run at the same time.
 - Every radar UART byte is forwarded unmodified to USB and BLE.
 - Host commands from USB or BLE are forwarded to the radar as complete lines (`\n`). If both have a complete line, **USB wins**. Incomplete lines never interleave. Lines over 128 bytes without `\n` are dropped.
+- `$GSOFF` is a firmware command, not a C4001 command. Firmware does not send it to the radar UART. It writes `sensorStop`, cuts IMU power, sends `$GSOFF,ok*\r\n` on USB and BLE, then enters nRF System OFF. Wake on USB-C plug-in or the XIAO reset button. If USB-C is already plugged in, System OFF often wakes at once (a reboot). The C4001 VIN stays on the XIAO 3.3 V rail until a hardware switch exists; `sensorStop` is the software cut.
 - Firmware injects IMU samples as `$GSIMU,...*\r\n` on USB and BLE. Those lines are **not** sent to the radar UART.
 - An IMU line goes out only between radar lines. If a radar line stalls for 160 ms, the IMU line goes out anyway.
 - If a host command does not fit the 512-byte command queue, firmware drops the whole command.

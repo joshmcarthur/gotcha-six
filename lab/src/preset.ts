@@ -3,6 +3,7 @@ import {
   presetGapMs,
   radarPresetCommands,
   encodeCommandLine as wasmEncodeCommandLine,
+  powerOffCommand as wasmPowerOffCommand,
 } from "./wasm/gotcha_six_core.js";
 
 /** Current preset command list from core. Requires WASM init first. */
@@ -22,4 +23,8 @@ export async function sendPreset(
 
 export function encodeCommandLine(cmd: string): Uint8Array {
   return wasmEncodeCommandLine(cmd);
+}
+
+export function powerOffCommand(): string {
+  return wasmPowerOffCommand();
 }

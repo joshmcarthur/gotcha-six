@@ -150,6 +150,51 @@ void test_imu_inject_skips_ble_when_high_water() {
   TEST_ASSERT_TRUE(b.usb_fifo().count() >= std::strlen(imu));
 }
 
+void test_gsoff_sets_latch_and_skips_cmd_queue() {
+  Bridge b;
+  const char* cmd = "$GSOFF";
+  for (const char* p = cmd; *p; ++p) {
+    b.on_host_byte(HostSource::Usb, static_cast<uint8_t>(*p));
+  }
+  b.on_host_byte(HostSource::Usb, '\n');
+
+  uint8_t byte;
+  TEST_ASSERT_FALSE(b.pop_cmd_byte(byte));
+  TEST_ASSERT_TRUE(b.consume_power_off());
+  TEST_ASSERT_FALSE(b.consume_power_off());
+}
+
+void test_sensor_stop_still_enqueues_after_gsoff_check() {
+  Bridge b;
+  const char* cmd = "sensorStop";
+  for (const char* p = cmd; *p; ++p) {
+    b.on_host_byte(HostSource::Usb, static_cast<uint8_t>(*p));
+  }
+  b.on_host_byte(HostSource::Usb, '\n');
+
+  char out[32] = {};
+  size_t i = 0;
+  uint8_t byte;
+  while (b.pop_cmd_byte(byte) && i + 1 < sizeof(out)) {
+    out[i++] = static_cast<char>(byte);
+  }
+  TEST_ASSERT_EQUAL_STRING("sensorStop\r\n", out);
+  TEST_ASSERT_FALSE(b.consume_power_off());
+}
+
+void test_gsoff_ok_is_not_power_off() {
+  Bridge b;
+  const char* cmd = "$GSOFF,ok";
+  for (const char* p = cmd; *p; ++p) {
+    b.on_host_byte(HostSource::Usb, static_cast<uint8_t>(*p));
+  }
+  b.on_host_byte(HostSource::Usb, '\n');
+
+  TEST_ASSERT_FALSE(b.consume_power_off());
+  uint8_t byte;
+  TEST_ASSERT_TRUE(b.pop_cmd_byte(byte));
+}
+
 void test_ble_make_room_prefers_gsimu() {
   Bridge b;
   const char* imu = "$GSIMU,1,2,3,4,5,6*\n";
@@ -180,6 +225,9 @@ int main(int argc, char** argv) {
   RUN_TEST(test_imu_inject_skips_usb_when_line_does_not_fit);
   RUN_TEST(test_radar_mid_line_tracks_line_boundary);
   RUN_TEST(test_imu_inject_skips_ble_when_high_water);
+  RUN_TEST(test_gsoff_sets_latch_and_skips_cmd_queue);
+  RUN_TEST(test_sensor_stop_still_enqueues_after_gsoff_check);
+  RUN_TEST(test_gsoff_ok_is_not_power_off);
   RUN_TEST(test_ble_make_room_prefers_gsimu);
   return UNITY_END();
 }

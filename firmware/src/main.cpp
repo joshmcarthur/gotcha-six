@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <bluefruit.h>
+#include <nrf_soc.h>
 
 #include "bridge.hpp"
 #include "imu.hpp"
@@ -118,6 +119,35 @@ void service_ble_tx() {
   }
 }
 
+void enter_system_off() {
+  uint8_t discarded;
+  while (bridge.pop_cmd_byte(discarded)) {
+  }
+
+  const uint8_t kStop[] = {'s', 'e', 'n', 's', 'o', 'r', 'S', 't', 'o', 'p', '\r', '\n'};
+  Serial1.write(kStop, sizeof(kStop));
+
+  gotcha::imu_power_off();
+  imu_ok = false;
+
+  const uint8_t kAck[] = {'$', 'G', 'S', 'O', 'F', 'F', ',', 'o', 'k', '*', '\r', '\n'};
+  const bool ble_ok = Bluefruit.connected() && bleuart.notifyEnabled();
+  (void)bridge.inject_host_line(kAck, sizeof(kAck), ble_ok);
+  service_usb_tx();
+  service_ble_tx();
+
+  Bluefruit.Advertising.restartOnDisconnect(false);
+  Bluefruit.Advertising.stop();
+  if (Bluefruit.connected()) {
+    Bluefruit.disconnect(Bluefruit.connHandle());
+  }
+
+  delay(100);
+  (void)sd_power_system_off();
+  while (true) {
+  }
+}
+
 void maybe_imu_sample() {
   if (!imu_ok) {
     return;
@@ -199,6 +229,9 @@ void loop() {
   drain_radar_to_fifos();
   drain_usb_host(); // USB first for command arbitration
   drain_ble_host();
+  if (bridge.consume_power_off()) {
+    enter_system_off();
+  }
   service_radar_tx();
   maybe_imu_sample();
   maybe_power_sample();

@@ -34,6 +34,12 @@ bool imu_begin() {
   return true;
 }
 
+void imu_power_off() {
+  ready = false;
+  pinMode(PIN_LSM6DS3TR_C_POWER, OUTPUT);
+  digitalWrite(PIN_LSM6DS3TR_C_POWER, LOW);
+}
+
 size_t imu_format_sample(char* out, size_t out_cap) {
   if (!ready || out == nullptr || out_cap < 48) {
     return 0;

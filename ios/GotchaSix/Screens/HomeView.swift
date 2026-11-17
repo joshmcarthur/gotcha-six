@@ -4,6 +4,7 @@ struct HomeView: View {
     @EnvironmentObject private var onboarding: OnboardingStore
     @EnvironmentObject private var radar: RadarLink
     @EnvironmentObject private var session: SessionController
+    @State private var confirmPowerOff = false
 
     var body: some View {
         NavigationStack {
@@ -71,6 +72,11 @@ struct HomeView: View {
                         Button("Play demo") {
                             onboarding.openDemoPicker()
                         }
+                        if radar.isConnected {
+                            Button("Power off unit", role: .destructive) {
+                                confirmPowerOff = true
+                            }
+                        }
                         if radar.storedPeripheralId != nil || radar.isConnected {
                             Button("Forget device", role: .destructive) {
                                 if session.isSessionOn {
@@ -81,6 +87,17 @@ struct HomeView: View {
                         }
                     }
                 }
+            }
+            .confirmationDialog("Power off unit?", isPresented: $confirmPowerOff, titleVisibility: .visible) {
+                Button("Power off", role: .destructive) {
+                    if session.isSessionOn {
+                        session.endSession()
+                    }
+                    radar.powerOff()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("The unit stays off until you plug in USB-C.")
             }
         }
     }
