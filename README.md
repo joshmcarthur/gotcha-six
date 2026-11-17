@@ -2,28 +2,21 @@
 
 Rear awareness for running, cycling, or any activity where you need to know what is behind you.
 
-<p align="center">
-  <img src="docs/screenshots/welcome.png" alt="Gotcha Six welcome screen" width="280" />
-  &nbsp;
-  <img src="docs/screenshots/how-it-watches.png" alt="What the radar watches" width="280" />
-</p>
-
 Hardware:
 
 - Seeed Studio XIAO nRF52840 Sense
 - DFRobot C4001 24 GHz mmWave radar (SEN0609)
 - Onboard LSM6DS3TR-C IMU
 
-The nRF52840 firmware is a transparent UART bridge plus an IMU feeder. Protocol parsing and motion interpretation live in a shared Rust core. The browser lab consumes that core over USB (Web Serial) or BLE (Web Bluetooth / Nordic UART Service). An iPhone companion in `ios/` pairs over the same NUS pipe, teaches the alert, and runs a Live Activity session with time-sensitive interrupts.
+The nRF52840 firmware is a transparent UART bridge plus an IMU feeder. Protocol parsing and motion interpretation live in a shared Rust core. The browser lab consumes that core over USB (Web Serial) or BLE (Web Bluetooth / Nordic UART Service).
 
 ## Repository layout
 
 | Path | Role |
 | --- | --- |
 | `firmware/` | PlatformIO / Arduino dual-transport bridge |
-| `core/` | Rust parser, tracking, detection (also WASM / UniFFI) |
+| `core/` | Rust parser, tracking, detection (also WASM) |
 | `lab/` | Vite TypeScript development console |
-| `ios/` | SwiftUI companion app + Live Activity extension |
 
 ## Wiring
 
