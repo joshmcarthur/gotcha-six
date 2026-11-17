@@ -149,6 +149,24 @@ final class RadarLink: NSObject, ObservableObject {
         }
     }
 
+    /// Ask firmware to enter System OFF. Keeps the stored peripheral id.
+    func powerOff() {
+        reconnectWatch?.cancel()
+        presetTask?.cancel()
+        lastError = nil
+        let line = encodeCommandLine(cmd: powerOffCommand())
+        do {
+            try writeChunks(line)
+        } catch {
+            lastError = error.localizedDescription
+            return
+        }
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 100_000_000)
+            self?.disconnect()
+        }
+    }
+
     /// Reset parser + gate and arm AlertGate for a ride session.
     func beginSessionParsing() {
         resetEngines()

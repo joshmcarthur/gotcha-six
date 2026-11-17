@@ -90,7 +90,7 @@ bool RingBuffer::starts_with_gsimu() const {
 Bridge::Bridge()
     : usb_(usb_storage_, kUsbFifoSize), ble_(ble_storage_, kBleFifoSize),
       cmd_(cmd_storage_, kCmdQueueSize), usb_line_len_(0), usb_discarding_(false), ble_line_len_(0),
-      ble_discarding_(false), radar_mid_line_(false) {}
+      ble_discarding_(false), radar_mid_line_(false), power_off_pending_(false) {}
 
 void Bridge::on_radar_byte(uint8_t b) {
   radar_mid_line_ = (b != '\n');
@@ -131,6 +131,14 @@ void Bridge::on_host_byte(HostSource src, uint8_t b) {
 
 bool Bridge::pop_cmd_byte(uint8_t& out) {
   return cmd_.pop(out);
+}
+
+bool Bridge::consume_power_off() {
+  if (!power_off_pending_) {
+    return false;
+  }
+  power_off_pending_ = false;
+  return true;
 }
 
 void Bridge::ble_make_room(size_t need) {
@@ -183,6 +191,11 @@ void Bridge::feed_line(HostSource src, uint8_t b) {
 }
 
 void Bridge::enqueue_line(const uint8_t* data, size_t len) {
+  static const char kPowerOff[] = "$GSOFF";
+  if (len == 6 && std::memcmp(data, kPowerOff, 6) == 0) {
+    power_off_pending_ = true;
+    return;
+  }
   // USB-first arbitration: if USB already has a pending complete command in
   // the queue, BLE still appends after it — callers drain host sources USB then
   // BLE each loop, so simultaneous completes enqueue USB first.

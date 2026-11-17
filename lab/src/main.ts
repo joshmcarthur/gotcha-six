@@ -1,5 +1,5 @@
 import { DistanceChart } from "./chart";
-import { encodeCommandLine, sendPreset } from "./preset";
+import { encodeCommandLine, powerOffCommand, sendPreset } from "./preset";
 import { SessionRecorder, type TimedLine, downloadBlob, parseRecording } from "./session";
 import { simulateApproach } from "./simulator";
 import { WebBluetoothTransport } from "./transports/bluetooth";
@@ -55,6 +55,7 @@ const el = {
   btnDisconnect: requireEl<HTMLButtonElement>("btn-disconnect"),
   btnSend: requireEl<HTMLButtonElement>("btn-send"),
   btnPreset: requireEl<HTMLButtonElement>("btn-preset"),
+  btnPowerOff: requireEl<HTMLButtonElement>("btn-power-off"),
   btnRecord: requireEl<HTMLButtonElement>("btn-record"),
   btnStopRecord: requireEl<HTMLButtonElement>("btn-stop-record"),
   btnExportTxt: requireEl<HTMLButtonElement>("btn-export-txt"),
@@ -79,6 +80,7 @@ function setConnected(connected: boolean, label: string): void {
   el.btnDisconnect.disabled = !connected;
   el.btnSend.disabled = !connected;
   el.btnPreset.disabled = !connected;
+  el.btnPowerOff.disabled = !connected;
   el.btnUsb.disabled = connected;
   el.btnBle.disabled = connected;
 }
@@ -223,6 +225,10 @@ el.cmd.addEventListener("keydown", (ev) => {
 
 el.btnPreset.addEventListener("click", () => {
   void sendPreset(writeCommand).catch((e: Error) => appendLog("unknown", e.message));
+});
+
+el.btnPowerOff.addEventListener("click", () => {
+  void writeCommand(powerOffCommand()).catch((e: Error) => appendLog("unknown", e.message));
 });
 
 el.btnRecord.addEventListener("click", () => {

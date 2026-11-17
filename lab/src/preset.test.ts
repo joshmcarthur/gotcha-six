@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
-import { encodeCommandLine, gotchaSixPreset } from "./preset";
+import { encodeCommandLine, gotchaSixPreset, powerOffCommand } from "./preset";
 import init from "./wasm/gotcha_six_core.js";
 
 describe("preset", () => {
@@ -23,5 +23,10 @@ describe("preset", () => {
   it("encodes CRLF command lines", () => {
     const bytes = encodeCommandLine("sensorStop");
     expect(new TextDecoder().decode(bytes)).toBe("sensorStop\r\n");
+  });
+
+  it("encodes the power-off command", () => {
+    expect(powerOffCommand()).toBe("$GSOFF");
+    expect(new TextDecoder().decode(encodeCommandLine(powerOffCommand()))).toBe("$GSOFF\r\n");
   });
 });

@@ -4,7 +4,7 @@ use std::sync::Mutex;
 
 use crate::alert_gate::{AlertGate, OutputKind};
 use crate::detection::Motion;
-use crate::preset::{self, GOTCHA_SIX_PRESET, PRESET_GAP_MS};
+use crate::preset::{self, GOTCHA_SIX_PRESET, POWER_OFF_COMMAND, PRESET_GAP_MS};
 use crate::{RadarEngine, RadarEvent, RadarOutput};
 
 /// Flat engine output for Swift (mirrors the lab WASM DTO field set).
@@ -129,6 +129,11 @@ pub fn encode_command_line(cmd: String) -> Vec<u8> {
     preset::encode_command_line(&cmd)
 }
 
+#[uniffi::export]
+pub fn power_off_command() -> String {
+    POWER_OFF_COMMAND.to_string()
+}
+
 impl From<RadarOutput> for EngineOutput {
     fn from(o: RadarOutput) -> Self {
         let motion = motion_str(o.motion).to_string();
@@ -220,6 +225,8 @@ mod tests {
         assert!(radar_preset_commands().iter().any(|c| c == "setRunApp 1"));
         assert_eq!(preset_gap_ms(), 150);
         assert_eq!(encode_command_line("sensorStop".into()), b"sensorStop\r\n");
+        assert_eq!(power_off_command(), POWER_OFF_COMMAND);
+        assert_eq!(encode_command_line(power_off_command()), b"$GSOFF\r\n");
     }
 
     #[test]
