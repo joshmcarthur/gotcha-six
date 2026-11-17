@@ -8,8 +8,8 @@
 //   assembly : parts in place with component models (view only)
 //   none     : nothing; for scratch files that `include` this file
 // fastener: "tapping" | "insert" — the two spine holes
-//   tapping : 1.7 mm holes for M2 self-tapping screws
-//   insert  : 3.2 mm holes for M2 heat-set inserts
+//   tapping : 2.5 mm holes for M3 self-tapping screws
+//   insert  : 4.0 mm holes for M3 heat-set inserts
 //
 // Worn orientation, viewed from the front (the radar side):
 //   +Y is up (the clip hooks over the band there), USB-C is in the -Y wall.
@@ -100,7 +100,7 @@ led_wall = 0.40;
 
 // Clip (see SPEC.md section 7). It prints on its side.
 clip_w = 16.00;
-clip_base_t = 1.60;
+clip_base_t = 2.00;
 clip_arm_t0 = 2.20; // arm at the bend
 clip_arm_t1 = 1.40; // arm at the tip
 clip_flare = 1.50;
@@ -112,19 +112,19 @@ clip_open = 2.00; // arm opening for the strain check
 clip_max_strain = 0.015;
 tether_d = 2.50;
 
-// M2
-m2_head_d = 4.50;
-m2_clear = 2.20;
-m2_tap_d = 1.70;
-m2_tap_z = 6.00;
-m2_insert_d = 3.20;
-m2_insert_z = 4.20;
+// M3
+m3_head_d = 6.00;
+m3_clear = 3.40;
+m3_tap_d = 2.50;
+m3_tap_z = 6.00;
+m3_insert_d = 4.00;
+m3_insert_z = 6.00;
 
 assert(fastener == "insert" || fastener == "tapping", "fastener must be \"insert\" or \"tapping\"");
 
-function pilot_d() = fastener == "insert" ? m2_insert_d : m2_tap_d;
-function pilot_z() = fastener == "insert" ? m2_insert_z : m2_tap_z;
-spine_w = fastener == "insert" ? 5.60 : 4.40;
+function pilot_d() = fastener == "insert" ? m3_insert_d : m3_tap_d;
+function pilot_z() = fastener == "insert" ? m3_insert_z : m3_tap_z;
+spine_w = fastener == "insert" ? 6.40 : 5.00;
 
 // --- Derived layout ---
 inner_r = corner_r - wall;
@@ -334,7 +334,7 @@ module lid() {
 
     boss_positions()
       translate([0, 0, -ring_z - 1])
-        cylinder(d = m2_clear, h = lid_t + ring_z + 2);
+        cylinder(d = m3_clear, h = lid_t + ring_z + 2);
 
     translate([0, 0, -shell_z])
       usb_cuts();
@@ -456,7 +456,7 @@ module clip_profile() {
       ]);
       // Ribs on the base. The steep face is toward the bend, so the band
       // goes in easily and the unit does not move up.
-      for (y = [-6:3:6])
+      for (y = [-6.5:2.9:5.2])
         translate([y, bt - eps])
           polygon([[0, 0], [1.6, clip_rib + eps], [1.6, 0]]);
     }
@@ -470,7 +470,7 @@ module clip_profile() {
 module clip() {
   step = 0.2;
   n = round(clip_edge / step);
-  cs_h = (m2_head_d - m2_clear) / 2;
+  cs_h = (m3_head_d - m3_clear) / 2;
 
   difference() {
     union() {
@@ -487,13 +487,13 @@ module clip() {
       translate([y, 0, clip_w / 2])
         rotate([-90, 0, 0]) {
           translate([0, 0, -eps])
-            cylinder(d = m2_clear, h = clip_base_t + 2 * eps);
+            cylinder(d = m3_clear, h = clip_base_t + 2 * eps);
           // Countersink for the screw head.
           translate([0, 0, clip_base_t - cs_h])
-            cylinder(d1 = m2_clear, d2 = m2_head_d, h = cs_h + eps);
+            cylinder(d1 = m3_clear, d2 = m3_head_d, h = cs_h + eps);
           // The screw and the driver go through the arm.
           translate([0, 0, clip_base_t + clip_gap / 2])
-            cylinder(d = m2_head_d + 0.5, h = 20);
+            cylinder(d = m3_head_d + 0.5, h = 20);
         }
   }
 }

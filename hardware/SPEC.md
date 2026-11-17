@@ -86,7 +86,7 @@ Inner 26.87 × 30.8. Outer 34.04 × 38.07 × 15.22. All M.
 
 ## 5. Fasteners
 
-M2. Values from the file (F): clearance hole 2.2; head 4.5 × 1.6 (the clip countersink uses 4.5 at 90°); self-tapping pilot 1.7, depth 6.0; heat-set insert hole 3.2, depth 4.2. The `fastener` parameter selects `insert` (current default) or `tapping`.
+M3. Values from the file (F): clearance hole 3.4; countersunk head 6.0 (the clip countersink uses 6.0 at 90°); self-tapping pilot 2.5, depth 6.0; heat-set insert hole 4.0, depth 6.0. The insert hole accepts brass heat-set inserts from 3 to 5.7 long. The `fastener` parameter selects `insert` (current default) or `tapping`.
 
 ## 6. Depth budget
 
@@ -96,7 +96,7 @@ M2. Values from the file (F): clearance hole 2.2; head 4.5 × 1.6 (the clip coun
 | Radar half: window 0.8 + air gap 1.25 + radar 2.7 + carrier 5.0 + clearance 0.1 | 9.85 |
 | Carrier: floor 0.4 + XIAO 4.5 + 0.1 | 5.0 |
 | Case: shell 9.85 + lid 1.6 | 11.45 |
-| Clip: base 1.6 + gap 2.4 + arm 2.2 | 6.2 |
+| Clip: base 2.0 + gap 2.4 + arm 2.2 | 6.6 |
 
 The battery half sets the shell depth. The front over the cell is 1.2 to protect the cell. The radar half gets the difference as air gap. The file computes these values and has an `assert` for the air gap and for the cell clearance.
 
@@ -114,7 +114,7 @@ Layout B, side by side. Viewed from the front, clip at the top:
  └───────USB────────┴──┴──────────────┘
 ```
 
-As built in the file (2026-11-12): 56.7 × 33.4 × 11.45 without the clip (55.5 wide with `fastener = "tapping"`). Shell, lid and carrier are 8.9 cm³, about 11 g in PETG. With `radar_rotated = true` the width is 60.7.
+As built in the file (2026-11-17): 57.5 × 33.4 × 11.45 without the clip (56.1 wide with `fastener = "tapping"`). Shell, lid and carrier are 9.4 cm³, about 12 g in PETG. With `radar_rotated = true` the width is 61.5.
 
 Parts:
 
@@ -125,7 +125,7 @@ Parts:
 | `carrier` | Frame on the back of the radar with a 0.4 floor and the XIAO pocket | Floor down |
 | `clip` | J-hook with a base strip along the spine | On its side |
 
-- Two M2 countersunk screws go through the clip base and the lid into the spine bosses. The clip load goes into the spine. The file prints the maximum screw length: 7.4 with `insert` (use M2 × 6), 9.2 with `tapping` (use M2 × 8). An M2 × 8 screw touches the bottom of the insert hole.
+- Two M3 countersunk screws go through the clip base and the lid into the spine bosses. The clip load goes into the spine. The file prints the maximum screw length: 9.6 with `insert` and with `tapping`. Use M3 × 8.
 - The radar has no screws. It sits on 1.0 pads, and the carrier and lid clamp it.
 - The two outer radar bay corners have the radius `radar_corner_r` (1.5), not the case inner radius (3.6). The radar margin stays 0.2 and the outline does not change. The wall at these two corners is 0.53 at its thinnest point, and 0.33 in the one layer from z = 0.8 to 1.0 (front chamfer).
 - No battery shim. The bay is the size of the cell. Two stop ribs keep the cell out of the lead space at the top.
@@ -145,12 +145,12 @@ Selected touches:
 - Step joint: the lid ring goes 1.0 into the shell, with two detent bumps at the short ends.
 - "UP" mark on the outside of the lid.
 
-Clip, as built in the file (2026-11-13): 16 wide, 6.2 deep, 1.9 cm³, about 2.5 g in PETG. The top of the bend is level with the top of the case. The tether tab is 3.6 above the case. The tip is 0.2 below the case.
+Clip, as built in the file (2026-11-17): 16 wide, 6.6 deep, 2.1 cm³, about 2.6 g in PETG. The top of the bend is level with the top of the case. The tether tab is 3.4 above the case. The tip is 0.4 below the case.
 
-- Base 1.6 with five sawtooth ribs, 0.4 high. The steep face is toward the bend: the band goes in easily, and the unit does not move up.
+- Base 2.0 with five sawtooth ribs, 0.4 high. The steep face is toward the bend: the band goes in easily, and the unit does not move up.
 - Bend: the inside is a full half circle with radius `clip_gap` / 2.
 - Arm: 2.2 at the bend, 1.4 at the tip, length `clip_arm_len` (28.5). The tip is flared 30° for 1.5. A 0.6 lip with 45° faces is 1.3 from the tip. The gap at the lip is 1.8.
-- Two 5.0 holes in the arm, in line with the screws. The screw head (4.5) and the driver go through them, because the gap is smaller than the screw length. The screw heads are in countersinks in the base, not on the skin side. 0.45 of base stays below each countersink.
+- Two 6.5 holes in the arm, in line with the screws. The screw head (6.0) and the driver go through them, because the gap is smaller than the screw length. The screw heads are in countersinks in the base, not on the skin side. 0.7 of base stays below each countersink. The ribs are between the two countersinks.
 - The two bed-side edges have a 0.4 chamfer made of 0.2 steps, one step for each layer.
 - The file has an `assert`: the strain at the arm root for a 2.0 opening must be 1.5% or less. The value is 0.81%. (A: the 1.5% limit for PETG is not from a datasheet.)
 
