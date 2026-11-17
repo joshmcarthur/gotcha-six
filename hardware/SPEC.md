@@ -144,6 +144,7 @@ Selected touches:
 - Tether hole: 2.5, in a tab at the top of the clip. A case corner hole was rejected because it adds width. Risk: if the clip breaks off the case, the cord does not hold the case.
 - Step joint: the lid ring goes 1.0 into the shell, with two detent bumps at the short ends.
 - "UP" mark on the outside of the lid.
+- Reset pin hole in the lid, 1.5 diameter, above the XIAO reset button. It accepts a paper clip or a SIM pin. A guide tube (2.7 outside, 2.0 long) on the inside aims the pin and stops 0.7 above the button. The hole is 1.25 from the clip base, so it stays open with the clip on (0.55 with `fastener = "tapping"`).
 
 Clip, as built in the file (2026-11-17): 16 wide, 6.6 deep, 2.1 cm³, about 2.6 g in PETG. The top of the bend is level with the top of the case. The tether tab is 3.4 above the case. The tip is 0.4 below the case.
 
@@ -212,6 +213,7 @@ OpenSCAD is at `/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD`. It is not o
 - Radar board: corner radius (1.5 is an estimate), board thickness, and which side is the wide beam axis.
 - Mass of the radar, XIAO and cell (not weighed).
 - XIAO: which face is toward the lid, and where the LEDs are in relation to the bottom wall.
+- XIAO reset button: the position is an estimate (6.4 from the board centre line toward the spine, 1.5 from the USB-end edge, top 2.0 above the board bottom). Measure it and correct `xiao_reset_x`, `xiao_reset_y` and `xiao_reset_z`.
 - Wire routes between the radar pads, the XIAO and the cell.
 - Clip gap for the real waistband and for a cap.
 

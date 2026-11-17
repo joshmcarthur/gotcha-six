@@ -45,6 +45,12 @@ xiao_pcb_t = 1.00;
 xiao_board_z = 3.00;
 xiao_usb_z = 4.50;
 xiao_fit = 0.30;
+// Reset button. Estimates, not measured: centre from the board centre line
+// (toward the spine), centre from the USB-end edge, top above the board bottom.
+xiao_reset_x = 6.40;
+xiao_reset_y = 1.50;
+xiao_reset_z = 2.00;
+xiao_can_y = 5.00; // the shield can starts here, from the USB-end edge
 
 usb_shell_w = 8.94;
 usb_shell_h = 3.26;
@@ -97,6 +103,11 @@ strip_h = 24.00;
 
 led_d = 2.00;
 led_wall = 0.40;
+
+// Reset pin hole in the lid, with a guide tube on the inside.
+reset_d = 1.50;
+reset_tube_wall = 0.60;
+reset_tube_clear = 0.70; // tube end to the button
 
 // Clip (see SPEC.md section 7). It prints on its side.
 clip_w = 16.00;
@@ -171,6 +182,9 @@ usb_z_mid = z_xiao + xiao_pcb_t + usb_shell_h / 2;
 usb_slot_w = usb_shell_w + usb_clear;
 usb_slot_z0 = usb_z_mid - (usb_shell_h + usb_clear) / 2;
 xiao_post_z = shell_z - (z_xiao + xiao_board_z) - 0.10;
+reset_cx = xiao_cx + xiao_reset_x;
+reset_cy = xiao_y0 + xiao_reset_y;
+reset_tube_z = shell_z - (z_xiao + xiao_reset_z) - reset_tube_clear;
 
 clip_base_y0 = -boss_y - 5;
 // Strain at the arm root when the tip opens by clip_open (beam formula).
@@ -330,6 +344,18 @@ module lid() {
       // Post holds the XIAO down on its shield can.
       translate([xiao_cx, xiao_y0 + xiao_h * 0.6, -xiao_post_z])
         cylinder(d = 3.5, h = xiao_post_z + eps);
+
+      // Guide tube for the reset pin.
+      translate([reset_cx, reset_cy, -reset_tube_z])
+        cylinder(d = reset_d + 2 * reset_tube_wall, h = reset_tube_z + eps, $fn = 32);
+    }
+
+    // Reset pin hole, with a chamfer on the outside.
+    translate([reset_cx, reset_cy, 0]) {
+      translate([0, 0, -reset_tube_z - 1])
+        cylinder(d = reset_d, h = reset_tube_z + lid_t + 2, $fn = 32);
+      translate([0, 0, lid_t - 0.4])
+        cylinder(d1 = reset_d, d2 = reset_d + 0.8, h = 0.4 + eps, $fn = 32);
     }
 
     boss_positions()
@@ -523,7 +549,11 @@ module radar_model() {
 
 module xiao_model() {
   translate([xiao_cx - xiao_w / 2, xiao_y0, z_xiao])
-    cube([xiao_w, xiao_h, xiao_board_z]);
+    cube([xiao_w, xiao_h, xiao_pcb_t]);
+  translate([xiao_cx - xiao_w / 2, xiao_y0 + xiao_can_y, z_xiao])
+    cube([xiao_w, xiao_h - xiao_can_y, xiao_board_z]);
+  translate([reset_cx - 1.0, reset_cy - 0.8, z_xiao])
+    cube([2.0, 1.6, xiao_reset_z]);
   translate([xiao_cx - usb_shell_w / 2, xiao_y0 - usb_past_edge, z_xiao + xiao_pcb_t])
     cube([usb_shell_w, 7.3, usb_shell_h]);
 }
