@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include "bridge.hpp"
+#include "status_led.hpp"
 
 using gotcha::Bridge;
 using gotcha::HostSource;
@@ -212,6 +213,23 @@ void test_ble_make_room_prefers_gsimu() {
   }
 }
 
+// Native Unity links every test/*.cpp into one binary. Keep LED policy tests here.
+void test_charging_wins_over_connected() {
+  TEST_ASSERT_EQUAL(gotcha::StatusLedMode::Charging, gotcha::status_led_mode(true, true));
+}
+
+void test_connected_turns_led_off() {
+  TEST_ASSERT_EQUAL(gotcha::StatusLedMode::Off, gotcha::status_led_mode(false, true));
+}
+
+void test_advertising_when_idle() {
+  TEST_ASSERT_EQUAL(gotcha::StatusLedMode::Advertising, gotcha::status_led_mode(false, false));
+}
+
+void test_charging_when_advertising() {
+  TEST_ASSERT_EQUAL(gotcha::StatusLedMode::Charging, gotcha::status_led_mode(true, false));
+}
+
 int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
@@ -229,5 +247,9 @@ int main(int argc, char** argv) {
   RUN_TEST(test_sensor_stop_still_enqueues_after_gsoff_check);
   RUN_TEST(test_gsoff_ok_is_not_power_off);
   RUN_TEST(test_ble_make_room_prefers_gsimu);
+  RUN_TEST(test_charging_wins_over_connected);
+  RUN_TEST(test_connected_turns_led_off);
+  RUN_TEST(test_advertising_when_idle);
+  RUN_TEST(test_charging_when_advertising);
   return UNITY_END();
 }

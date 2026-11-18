@@ -5,6 +5,7 @@
 #include "bridge.hpp"
 #include "imu.hpp"
 #include "power.hpp"
+#include "status_led.hpp"
 
 namespace {
 
@@ -129,6 +130,7 @@ void enter_system_off() {
 
   gotcha::imu_power_off();
   imu_ok = false;
+  gotcha::status_led_off();
 
   const uint8_t kAck[] = {'$', 'G', 'S', 'O', 'F', 'F', ',', 'o', 'k', '*', '\r', '\n'};
   const bool ble_ok = Bluefruit.connected() && bleuart.notifyEnabled();
@@ -207,6 +209,7 @@ void setup() {
   Serial1.begin(9600);
 
   Bluefruit.begin();
+  Bluefruit.autoConnLed(false);
   Bluefruit.setName("Gotcha Six");
   Bluefruit.setTxPower(4);
   Bluefruit.Periph.setConnectCallback(connect_callback);
@@ -223,6 +226,7 @@ void setup() {
 
   imu_ok = gotcha::imu_begin();
   gotcha::power_begin();
+  gotcha::status_led_begin();
 }
 
 void loop() {
@@ -237,4 +241,5 @@ void loop() {
   maybe_power_sample();
   service_usb_tx();
   service_ble_tx();
+  gotcha::status_led_update(gotcha::power_charging(), Bluefruit.connected());
 }

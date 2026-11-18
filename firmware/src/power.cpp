@@ -28,13 +28,17 @@ void power_begin() {
   analogReadResolution(12);
 }
 
+bool power_charging() {
+  return digitalRead(PIN_BQ_CHG) == LOW;
+}
+
 size_t power_format_sample(char* out, size_t out_cap) {
   if (out == nullptr || out_cap < 24) {
     return 0;
   }
   const uint32_t raw = analogRead(PIN_VBAT);
   const float volts = (static_cast<float>(raw) / kAdcCounts) * kAdcFullScaleV * kDividerGain;
-  const unsigned charging = digitalRead(PIN_BQ_CHG) == LOW ? 1u : 0u;
+  const unsigned charging = power_charging() ? 1u : 0u;
   const int n = snprintf(out, out_cap, "$GSPWR,%.3f,%u*\r\n", static_cast<double>(volts), charging);
   if (n <= 0 || static_cast<size_t>(n) >= out_cap) {
     return 0;
