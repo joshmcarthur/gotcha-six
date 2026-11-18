@@ -293,8 +293,8 @@ final class RadarLink: NSObject, ObservableObject {
     }
 
     private func ingest(_ data: Data) {
-        let outputs = engine.pushBytes(data: data)
         let nowMs = UInt64(max(0, Date().timeIntervalSince(sessionStartedAt) * 1000))
+        let outputs = engine.pushBytesAt(data: data, nowMs: nowMs)
         for out in outputs {
             lastKind = out.kind
             if !out.motion.isEmpty {

@@ -46,6 +46,15 @@ impl UniffiRadarEngine {
             .collect()
     }
 
+    pub fn push_bytes_at(&self, data: Vec<u8>, now_ms: u64) -> Vec<EngineOutput> {
+        let mut engine = self.inner.lock().unwrap_or_else(|e| e.into_inner());
+        engine
+            .push_bytes_at(now_ms, &data)
+            .into_iter()
+            .map(EngineOutput::from)
+            .collect()
+    }
+
     pub fn reset(&self) {
         let mut engine = self.inner.lock().unwrap_or_else(|e| e.into_inner());
         engine.reset();

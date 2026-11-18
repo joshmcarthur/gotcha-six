@@ -37,6 +37,8 @@ pub struct RadarEngine {
     parser: RadarParser,
     tracker: Tracker,
     detector: DetectionEngine,
+    /// Fallback clock when the caller does not pass `now_ms`.
+    synth_ms: u64,
 }
 
 /// One parsed event plus derived motion fields.
@@ -54,27 +56,48 @@ impl RadarEngine {
         Self::default()
     }
 
-    /// Push raw transport bytes. Returns zero or more outputs.
+    /// Push raw transport bytes. Target lines step a 100 ms fallback clock.
     pub fn push_bytes(&mut self, data: &[u8]) -> Vec<RadarOutput> {
-        let events = self.parser.push_bytes(data);
-        let mut out = Vec::with_capacity(events.len());
-        for event in events {
-            out.push(self.handle_event(event));
-        }
-        out
+        self.dispatch(data, None)
+    }
+
+    /// Push bytes using the caller's sample time for every event in this chunk.
+    pub fn push_bytes_at(&mut self, now_ms: u64, data: &[u8]) -> Vec<RadarOutput> {
+        self.synth_ms = now_ms;
+        self.dispatch(data, Some(now_ms))
     }
 
     pub fn reset(&mut self) {
         self.parser.reset();
         self.tracker.reset();
         self.detector.reset();
+        self.synth_ms = 0;
     }
 
-    fn handle_event(&mut self, event: RadarEvent) -> RadarOutput {
+    fn dispatch(&mut self, data: &[u8], now_ms: Option<u64>) -> Vec<RadarOutput> {
+        let events = self.parser.push_bytes(data);
+        let mut out = Vec::with_capacity(events.len());
+        for event in events {
+            let t = match now_ms {
+                Some(t) => t,
+                None => {
+                    let t = self.synth_ms;
+                    if matches!(event, RadarEvent::Target(_)) {
+                        self.synth_ms = self.synth_ms.saturating_add(100);
+                    }
+                    t
+                }
+            };
+            out.push(self.handle_event(event, t));
+        }
+        out
+    }
+
+    fn handle_event(&mut self, event: RadarEvent, now_ms: u64) -> RadarOutput {
         match &event {
             RadarEvent::Target(target) => {
                 let tracked = self.tracker.update(target);
-                let (motion, closing) = self.detector.observe(&tracked);
+                let (motion, closing) = self.detector.observe(&tracked, now_ms);
                 RadarOutput {
                     event,
                     motion,

@@ -150,8 +150,9 @@ function onData(data: Uint8Array): void {
   if (!engine) {
     return;
   }
-  const raw = engine.pushBytes(data) as EngineOutput[];
-  handleOutputs(raw, performance.now());
+  const t = performance.now();
+  const raw = engine.pushBytesAt(t, data) as EngineOutput[];
+  handleOutputs(raw, t);
 }
 
 /** Send timed lines through a fresh engine. The chart shows the full duration. */
@@ -165,7 +166,10 @@ function replay(lines: TimedLine[]): void {
   chart.clear();
   chart.setWindow(last.t - first.t);
   for (const { t, line } of lines) {
-    handleOutputs(engine.pushBytes(encoder.encode(`${line}\n`)) as EngineOutput[], t);
+    handleOutputs(
+      engine.pushBytesAt(t, encoder.encode(`${line}\n`)) as EngineOutput[],
+      t,
+    );
   }
 }
 
