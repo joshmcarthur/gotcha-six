@@ -3,20 +3,27 @@ use gotcha_six_core::{Motion, RadarEngine, RadarEvent};
 fn push_fixture(engine: &mut RadarEngine, name: &str) -> Vec<gotcha_six_core::RadarOutput> {
     let path = format!("tests/fixtures/{name}");
     let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("read {path}: {e}"));
-    let mut bytes = Vec::with_capacity(text.len());
+    let mut outs = Vec::new();
     for line in text.lines() {
-        bytes.extend_from_slice(strip_time_prefix(line).as_bytes());
+        if line.is_empty() {
+            continue;
+        }
+        let (t_ms, raw) = split_time_prefix(line);
+        let mut bytes = raw.as_bytes().to_vec();
         bytes.push(b'\n');
+        outs.extend(engine.push_bytes_at(t_ms, &bytes));
     }
-    engine.push_bytes(&bytes)
+    outs
 }
 
-/// The lab text export writes `<t_ms>\t<raw line>`. Remove the time so an
-/// export works as a fixture with no edits. Plain lines pass through.
-fn strip_time_prefix(line: &str) -> &str {
+/// The lab text export writes `<t_ms>\t<raw line>`. Plain lines use t=0.
+fn split_time_prefix(line: &str) -> (u64, &str) {
     match line.split_once('\t') {
-        Some((t, rest)) if t.parse::<f64>().is_ok() => rest,
-        _ => line,
+        Some((t, rest)) => match t.parse::<f64>() {
+            Ok(ms) if ms >= 0.0 => (ms as u64, rest),
+            _ => (0, line),
+        },
+        None => (0, line),
     }
 }
 

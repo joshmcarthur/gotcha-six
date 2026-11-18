@@ -1,7 +1,8 @@
-//! Derive approaching / receding from distance change over a short window.
+//! Derive approaching / receding from distance change over a time window.
 //!
-//! Closing speed is the UART speed magnitude with the direction of the windowed
-//! distance change. Does not use UART speed sign. Does not fuse IMU.
+//! Closing speed is the slope of distance over that window. Positive means
+//! approaching. Does not use UART speed. Does not fuse IMU. A target must be
+//! absent for four frames before motion is Lost.
 
 use std::collections::VecDeque;
 
@@ -10,8 +11,16 @@ use crate::tracking::TrackedTarget;
 #[cfg(feature = "wasm")]
 use serde::{Deserialize, Serialize};
 
-/// Samples required before emitting Approaching or Receding.
-const MOTION_WINDOW: usize = 3;
+/// Consecutive absent `$DFDMD` frames before motion becomes Lost.
+const LOST_HOLD_SAMPLES: usize = 4;
+/// Metres of windowed distance change below which we call Stationary.
+const STATIONARY_EPS_M: f32 = 0.15;
+/// Lookback used to compare newest vs oldest distance.
+const WINDOW_MS: u64 = 3000;
+/// Minimum span before Approaching or Receding.
+const MIN_SPAN_MS: u64 = 1000;
+/// Cap so observe never grows without bound.
+const RING_CAP: usize = 128;
 
 /// Motion relative to the wearer (rear target).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -25,21 +34,20 @@ pub enum Motion {
     Unknown,
 }
 
-/// Motion and closing-speed estimator from a short distance window.
+/// Motion and closing-speed estimator from a timed distance window.
 #[derive(Debug)]
 pub struct DetectionEngine {
-    distances_m: VecDeque<f32>,
+    samples: VecDeque<(u64, f32)>,
     prev_present: bool,
-    /// Meters of windowed distance change below which we call Stationary.
-    stationary_eps_m: f32,
+    absent_count: usize,
 }
 
 impl Default for DetectionEngine {
     fn default() -> Self {
         Self {
-            distances_m: VecDeque::with_capacity(MOTION_WINDOW),
+            samples: VecDeque::with_capacity(RING_CAP),
             prev_present: false,
-            stationary_eps_m: 0.05,
+            absent_count: 0,
         }
     }
 }
@@ -50,62 +58,86 @@ impl DetectionEngine {
     }
 
     pub fn reset(&mut self) {
-        self.distances_m.clear();
+        self.samples.clear();
         self.prev_present = false;
+        self.absent_count = 0;
     }
 
-    /// Observe a tracked target update.
+    /// Observe a tracked target update at `now_ms`.
     ///
-    /// Returns (motion, closing_speed_m_s). Closing speed is in metres per
-    /// second: the radar speed magnitude, positive when approaching, negative
-    /// when receding, and zero when stationary. Direction is newest minus
-    /// oldest in a 3-sample window, so a single dip does not count as
-    /// approaching. It is `None` before the window fills, when the target is
-    /// lost, or when the radar gave no speed.
-    pub fn observe(&mut self, tracked: &TrackedTarget) -> (Motion, Option<f32>) {
+    /// Returns (motion, closing_speed_m_s). Closing speed is the slope of
+    /// distance over the lookback: positive when approaching, negative when
+    /// receding, zero when stationary. It is `None` before the min span
+    /// fills, when the target is lost, or when fewer than two samples exist.
+    pub fn observe(&mut self, tracked: &TrackedTarget, now_ms: u64) -> (Motion, Option<f32>) {
         if !tracked.present {
-            let was = self.prev_present;
-            self.prev_present = false;
-            self.distances_m.clear();
-            return if was {
-                (Motion::Lost, None)
-            } else {
-                (Motion::Unknown, None)
-            };
+            return self.observe_absent(now_ms);
         }
 
         let Some(dist) = tracked.distance_m else {
             self.prev_present = true;
+            self.absent_count = 0;
             return (Motion::Unknown, None);
         };
 
-        self.distances_m.push_back(dist);
-        while self.distances_m.len() > MOTION_WINDOW {
-            self.distances_m.pop_front();
-        }
+        self.absent_count = 0;
+        self.samples.push_back((now_ms, dist));
+        self.prune(now_ms);
         self.prev_present = true;
-        self.classify(tracked.speed_m_s)
+        self.classify()
     }
 
-    fn classify(&self, speed_m_s: Option<f32>) -> (Motion, Option<f32>) {
-        let speed = speed_m_s.map(f32::abs);
-        if self.distances_m.len() < 2 {
+    /// Keep the distance window until Lost so a return mid-coast still
+    /// classifies against the last present samples.
+    fn observe_absent(&mut self, now_ms: u64) -> (Motion, Option<f32>) {
+        if !self.prev_present {
             return (Motion::Unknown, None);
         }
-        let Some((&oldest, &newest)) = self.distances_m.front().zip(self.distances_m.back()) else {
+        self.absent_count = self.absent_count.saturating_add(1);
+        if self.absent_count < LOST_HOLD_SAMPLES {
+            self.prune(now_ms);
+            return (Motion::Stationary, Some(0.0));
+        }
+        self.prev_present = false;
+        self.absent_count = 0;
+        self.samples.clear();
+        (Motion::Lost, None)
+    }
+
+    fn prune(&mut self, now_ms: u64) {
+        let oldest_keep = now_ms.saturating_sub(WINDOW_MS);
+        while self.samples.front().is_some_and(|(t, _)| *t < oldest_keep) {
+            self.samples.pop_front();
+        }
+        while self.samples.len() > RING_CAP {
+            self.samples.pop_front();
+        }
+    }
+
+    fn classify(&self) -> (Motion, Option<f32>) {
+        let Some(&(oldest_t, oldest_d)) = self.samples.front() else {
             return (Motion::Unknown, None);
         };
-        let delta = newest - oldest; // positive => farther
-        if delta.abs() <= self.stationary_eps_m {
-            return (Motion::Stationary, speed.and(Some(0.0)));
-        }
-        if self.distances_m.len() < MOTION_WINDOW {
+        let Some(&(newest_t, newest_d)) = self.samples.back() else {
+            return (Motion::Unknown, None);
+        };
+        if newest_t <= oldest_t {
             return (Motion::Unknown, None);
         }
+        let span_ms = newest_t - oldest_t;
+        let delta = newest_d - oldest_d; // positive => farther
+        if delta.abs() <= STATIONARY_EPS_M {
+            return (Motion::Stationary, Some(0.0));
+        }
+        if span_ms < MIN_SPAN_MS {
+            return (Motion::Unknown, None);
+        }
+        let dt_s = span_ms as f32 / 1000.0;
+        let slope = -delta / dt_s; // positive when approaching
         if delta < 0.0 {
-            (Motion::Approaching, speed)
+            (Motion::Approaching, Some(slope))
         } else {
-            (Motion::Receding, speed.map(|s| -s))
+            (Motion::Receding, Some(slope))
         }
     }
 }
@@ -144,7 +176,20 @@ mod tests {
         tracker: &mut Tracker,
         distance: f32,
     ) -> (Motion, Option<f32>) {
-        det.observe(&tracker.update(&target(distance)))
+        observe_at(det, tracker, distance, 0)
+    }
+
+    fn observe_at(
+        det: &mut DetectionEngine,
+        tracker: &mut Tracker,
+        distance: f32,
+        now_ms: u64,
+    ) -> (Motion, Option<f32>) {
+        det.observe(&tracker.update(&target(distance)), now_ms)
+    }
+
+    fn observe_empty(det: &mut DetectionEngine, tracker: &mut Tracker) -> (Motion, Option<f32>) {
+        det.observe(&tracker.update(&empty()), 0)
     }
 
     #[test]
@@ -159,31 +204,34 @@ mod tests {
     }
 
     #[test]
-    fn approaching_on_third_sample_when_window_falls() {
+    fn approaching_after_one_second_when_range_falls() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
         assert_eq!(
-            observe_dist(&mut det, &mut tracker, 12.0).0,
+            observe_at(&mut det, &mut tracker, 12.0, 0).0,
             Motion::Unknown
         );
         assert_eq!(
-            observe_dist(&mut det, &mut tracker, 11.0).0,
+            observe_at(&mut det, &mut tracker, 11.0, 500).0,
             Motion::Unknown
         );
-        let (m, closing) = observe_dist(&mut det, &mut tracker, 10.0);
+        let (m, closing) = observe_at(&mut det, &mut tracker, 10.0, 1000);
         assert_eq!(m, Motion::Approaching);
-        assert_eq!(closing, Some(0.5));
+        assert_eq!(closing, Some(2.0));
     }
 
     #[test]
-    fn receding_on_third_sample_when_window_rises() {
+    fn receding_after_one_second_when_range_rises() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
-        assert_eq!(observe_dist(&mut det, &mut tracker, 5.0).0, Motion::Unknown);
-        assert_eq!(observe_dist(&mut det, &mut tracker, 7.0).0, Motion::Unknown);
-        let (m, closing) = observe_dist(&mut det, &mut tracker, 9.0);
+        assert_eq!(observe_at(&mut det, &mut tracker, 5.0, 0).0, Motion::Unknown);
+        assert_eq!(
+            observe_at(&mut det, &mut tracker, 7.0, 500).0,
+            Motion::Unknown
+        );
+        let (m, closing) = observe_at(&mut det, &mut tracker, 9.0, 1000);
         assert_eq!(m, Motion::Receding);
-        assert_eq!(closing, Some(-0.5));
+        assert_eq!(closing, Some(-4.0));
     }
 
     #[test]
@@ -208,37 +256,82 @@ mod tests {
     fn stationary_within_epsilon() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
-        let _ = observe_dist(&mut det, &mut tracker, 5.0);
-        let (m, closing) = observe_dist(&mut det, &mut tracker, 5.02);
+        let _ = observe_at(&mut det, &mut tracker, 5.0, 0);
+        let (m, closing) = observe_at(&mut det, &mut tracker, 5.02, 1000);
         assert_eq!(m, Motion::Stationary);
         assert_eq!(closing, Some(0.0));
     }
 
     #[test]
-    fn lost_after_target_gone() {
+    fn ten_cm_over_one_second_is_stationary() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
-        let _ = det.observe(&tracker.update(&target(5.0)));
-        let (m, _) = det.observe(&tracker.update(&empty()));
-        assert_eq!(m, Motion::Lost);
+        let _ = observe_at(&mut det, &mut tracker, 5.0, 0);
+        let (m, closing) = observe_at(&mut det, &mut tracker, 5.10, 1000);
+        assert_eq!(m, Motion::Stationary);
+        assert_eq!(closing, Some(0.0));
+    }
+
+    #[test]
+    fn lost_after_four_empty_frames() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_dist(&mut det, &mut tracker, 5.0);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Lost);
+    }
+
+    #[test]
+    fn one_empty_then_target_does_not_emit_lost() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_dist(&mut det, &mut tracker, 5.0);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_ne!(observe_dist(&mut det, &mut tracker, 5.0).0, Motion::Lost);
+    }
+
+    #[test]
+    fn brief_drop_does_not_rearm_alert_gate() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+
+        let (m1, _) = observe_at(&mut det, &mut tracker, 12.0, 0);
+        let (m2, _) = observe_at(&mut det, &mut tracker, 11.0, 500);
+        let (m3, _) = observe_at(&mut det, &mut tracker, 10.0, 1000);
+        assert!(!gate.observe(OutputKind::Target, m1, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Target, m2, Some(11.0), 500));
+        assert!(gate.observe(OutputKind::Target, m3, Some(10.0), 1000));
+
+        let (empty_motion, _) = observe_empty(&mut det, &mut tracker);
+        assert!(!gate.observe(OutputKind::Target, empty_motion, None, 1100));
+
+        let (m4, _) = observe_at(&mut det, &mut tracker, 9.5, 1200);
+        assert!(!gate.observe(OutputKind::Target, m4, Some(9.5), 1200));
     }
 
     #[test]
     fn imu_does_not_affect_motion_path() {
         // DetectionEngine only sees TrackedTarget; IMU never reaches it.
         let mut det = DetectionEngine::new();
-        assert_eq!(det.observe(&TrackedTarget::default()).0, Motion::Unknown);
+        assert_eq!(det.observe(&TrackedTarget::default(), 0).0, Motion::Unknown);
     }
 
     #[test]
     fn standstill_jitter_is_never_approaching() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
-        for distance in [12.0, 11.5, 12.0, 11.5, 12.0, 11.5, 12.0] {
+        let samples = [12.00, 12.10, 12.00, 12.08, 11.95, 12.05, 12.00];
+        let mut now_ms = 0_u64;
+        for distance in samples {
             assert_ne!(
-                observe_dist(&mut det, &mut tracker, distance).0,
+                observe_at(&mut det, &mut tracker, distance, now_ms).0,
                 Motion::Approaching
             );
+            now_ms += 200;
         }
     }
 
@@ -255,12 +348,57 @@ mod tests {
             12.0, 11.5, 12.0, 11.5, 12.0, 11.8, 12.2, 11.9, 11.0, 10.0, 9.0,
         ];
         for distance in samples {
-            let (motion, _) = observe_dist(&mut det, &mut tracker, distance);
+            let (motion, _) = observe_at(&mut det, &mut tracker, distance, now_ms);
             if gate.observe(OutputKind::Target, motion, Some(distance), now_ms) {
                 fires += 1;
             }
             now_ms += 100;
         }
         assert_eq!(fires, 1);
+    }
+
+    #[test]
+    fn twenty_cm_in_200ms_stays_unknown() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_at(&mut det, &mut tracker, 12.0, 0);
+        let _ = observe_at(&mut det, &mut tracker, 11.9, 100);
+        let (m, _) = observe_at(&mut det, &mut tracker, 11.8, 200);
+        assert_eq!(m, Motion::Unknown);
+    }
+
+    #[test]
+    fn twenty_cm_over_three_seconds_is_approaching_when_last_samples_are_flat() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_at(&mut det, &mut tracker, 12.00, 0);
+        let _ = observe_at(&mut det, &mut tracker, 11.85, 2800);
+        let _ = observe_at(&mut det, &mut tracker, 11.82, 2900);
+        let (m, closing) = observe_at(&mut det, &mut tracker, 11.80, 3000);
+        assert_eq!(m, Motion::Approaching);
+        let slope = closing.expect("slope");
+        assert!((slope - (12.00 - 11.80) / 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn twenty_cm_over_one_second_is_approaching() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_at(&mut det, &mut tracker, 12.0, 0);
+        let (m, closing) = observe_at(&mut det, &mut tracker, 11.8, 1000);
+        assert_eq!(m, Motion::Approaching);
+        let slope = closing.expect("slope");
+        assert!((slope - 0.2).abs() < 1e-5);
+    }
+
+    #[test]
+    fn hop_returning_inside_band_is_not_approaching() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_at(&mut det, &mut tracker, 12.0, 0);
+        let _ = observe_at(&mut det, &mut tracker, 10.0, 500);
+        let (m, _) = observe_at(&mut det, &mut tracker, 12.05, 1000);
+        assert_ne!(m, Motion::Approaching);
+        assert_eq!(m, Motion::Stationary);
     }
 }

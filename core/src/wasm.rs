@@ -46,14 +46,24 @@ impl WasmRadarEngine {
     /// Push raw bytes; returns a JS array of output objects.
     #[wasm_bindgen(js_name = pushBytes)]
     pub fn push_bytes(&mut self, data: &[u8]) -> Result<JsValue, JsValue> {
-        let outputs = self.inner.push_bytes(data);
-        let mapped: Vec<JsOutput> = outputs.into_iter().map(JsOutput::from).collect();
-        serde_wasm_bindgen::to_value(&mapped).map_err(|e| JsValue::from_str(&e.to_string()))
+        map_outputs(self.inner.push_bytes(data))
+    }
+
+    /// Push bytes using the caller's sample time.
+    #[wasm_bindgen(js_name = pushBytesAt)]
+    pub fn push_bytes_at(&mut self, now_ms: f64, data: &[u8]) -> Result<JsValue, JsValue> {
+        let t = if now_ms <= 0.0 { 0 } else { now_ms as u64 };
+        map_outputs(self.inner.push_bytes_at(t, data))
     }
 
     pub fn reset(&mut self) {
         self.inner.reset();
     }
+}
+
+fn map_outputs(outputs: Vec<RadarOutput>) -> Result<JsValue, JsValue> {
+    let mapped: Vec<JsOutput> = outputs.into_iter().map(JsOutput::from).collect();
+    serde_wasm_bindgen::to_value(&mapped).map_err(|e| JsValue::from_str(&e.to_string()))
 }
 
 impl Default for WasmRadarEngine {

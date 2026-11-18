@@ -56,7 +56,7 @@ final class FixturePlayer: ObservableObject {
                     try? await Task.sleep(nanoseconds: waitNs)
                 }
                 if Task.isCancelled { return }
-                await self?.push(line: event.line)
+                await self?.push(event)
             }
             await MainActor.run {
                 self?.isPlaying = false
@@ -71,10 +71,10 @@ final class FixturePlayer: ObservableObject {
         isPlaying = false
     }
 
-    private func push(line: String) {
-        var bytes = Array(line.utf8)
+    private func push(_ event: LineEvent) {
+        var bytes = Array(event.line.utf8)
         bytes.append(UInt8(ascii: "\n"))
-        let outs = engine.pushBytes(data: Data(bytes))
+        let outs = engine.pushBytesAt(data: Data(bytes), nowMs: event.tMs)
         for out in outs where out.kind == "target" || out.kind == "presence" {
             lastMotion = out.motion
             if let d = out.distanceM {
