@@ -44,9 +44,12 @@ final class RadarLink: NSObject, ObservableObject {
     /// Bumps when AlertGate says fire while a session is armed.
     @Published private(set) var alertSequence: UInt64 = 0
     @Published private(set) var lastAlertDistanceM: Double?
+    /// Last on-disk session recording, if it has bytes. Nil while a session is recording.
+    @Published private(set) var recordingFileURL: URL?
 
     private let engine = UniffiRadarEngine()
     private let alertGate = UniffiAlertGate()
+    private let sessionLog = SessionLog()
     private var central: CBCentralManager!
     private var peripheral: CBPeripheral?
     private var rxCharacteristic: CBCharacteristic?
@@ -62,6 +65,7 @@ final class RadarLink: NSObject, ObservableObject {
             storedPeripheralId = UUID(uuidString: raw)
         }
         super.init()
+        recordingFileURL = sessionLog.hasData ? sessionLog.fileURL : nil
         central = CBCentralManager(
             delegate: self,
             queue: nil,
@@ -173,12 +177,19 @@ final class RadarLink: NSObject, ObservableObject {
         sessionArmed = true
         sessionStartedAt = Date()
         alertGate.setSessionOn(on: true)
+        sessionLog.start()
+        recordingFileURL = nil
+        if !sessionLog.isRecording {
+            lastError = "Could not start session recording."
+        }
     }
 
     /// Disarm alerts; leave BLE and NUS as they are.
     func endSessionParsing() {
         sessionArmed = false
         alertGate.setSessionOn(on: false)
+        sessionLog.stop()
+        recordingFileURL = sessionLog.hasData ? sessionLog.fileURL : nil
     }
 
     /// After reconnect during an active session, re-arm the gate (reset cleared it).
@@ -299,6 +310,9 @@ final class RadarLink: NSObject, ObservableObject {
             lastKind = out.kind
             if !out.motion.isEmpty {
                 lastMotion = out.motion
+            }
+            if sessionArmed {
+                sessionLog.append(tMs: nowMs, raw: out.raw)
             }
             if out.kind == "target" {
                 hasTarget = true

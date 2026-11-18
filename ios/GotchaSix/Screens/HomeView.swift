@@ -42,8 +42,20 @@ struct HomeView: View {
                         .font(.footnote)
                         .foregroundStyle(.red)
                 }
+                if let error = radar.lastError, error != session.lastError {
+                    Text(error)
+                        .font(.footnote)
+                        .foregroundStyle(.red)
+                }
 
                 sessionButton
+
+                if !session.isSessionOn, let url = radar.recordingFileURL {
+                    ShareLink(item: url) {
+                        Text("Share last recording")
+                    }
+                    .buttonStyle(.bordered)
+                }
 
                 if !radar.isConnected, !session.isSessionOn {
                     Button(radar.storedPeripheralId == nil ? "Find device" : "Connect") {
