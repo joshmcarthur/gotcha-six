@@ -12,6 +12,7 @@ use crate::{RadarEngine, RadarEvent, RadarOutput};
 pub struct EngineOutput {
     pub kind: String,
     pub motion: String,
+    pub raw: String,
     pub distance_m: Option<f32>,
     pub closing_speed_m_s: Option<f32>,
     pub speed_m_s: Option<f32>,
@@ -139,9 +140,10 @@ impl From<RadarOutput> for EngineOutput {
         let motion = motion_str(o.motion).to_string();
         let closing = o.closing_speed_m_s;
         match o.event {
-            RadarEvent::Presence(_) => EngineOutput {
+            RadarEvent::Presence(p) => EngineOutput {
                 kind: "presence".into(),
                 motion,
+                raw: p.raw,
                 distance_m: None,
                 closing_speed_m_s: closing,
                 speed_m_s: None,
@@ -154,6 +156,7 @@ impl From<RadarOutput> for EngineOutput {
             RadarEvent::Target(t) => EngineOutput {
                 kind: "target".into(),
                 motion,
+                raw: t.raw,
                 distance_m: t.distance_m,
                 closing_speed_m_s: closing,
                 speed_m_s: t.speed_m_s,
@@ -166,6 +169,7 @@ impl From<RadarOutput> for EngineOutput {
             RadarEvent::Imu(i) => EngineOutput {
                 kind: "imu".into(),
                 motion,
+                raw: i.raw,
                 distance_m: None,
                 closing_speed_m_s: closing,
                 speed_m_s: None,
@@ -175,9 +179,10 @@ impl From<RadarOutput> for EngineOutput {
                 accel_m_s2: Some(i.accel_m_s2.to_vec()),
                 gyro_rad_s: Some(i.gyro_rad_s.to_vec()),
             },
-            RadarEvent::Unknown { .. } => EngineOutput {
+            RadarEvent::Unknown { raw } => EngineOutput {
                 kind: "unknown".into(),
                 motion,
+                raw,
                 distance_m: None,
                 closing_speed_m_s: closing,
                 speed_m_s: None,
@@ -212,6 +217,7 @@ mod tests {
         let outs = engine.push_bytes(line.to_vec());
         assert_eq!(outs.len(), 1);
         assert_eq!(outs[0].kind, "target");
+        assert_eq!(outs[0].raw, "$DFDMD,1,1,12.0,0.5,100, , *");
         assert_eq!(outs[0].distance_m, Some(12.0));
         assert_eq!(outs[0].speed_m_s, Some(0.5));
         assert_eq!(outs[0].energy, Some(100));
