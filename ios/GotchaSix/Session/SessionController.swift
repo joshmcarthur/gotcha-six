@@ -187,7 +187,7 @@ final class SessionController: ObservableObject {
         let connection = radar.isConnected ? "Connected" : "Disconnected"
         let motion: String = {
             if !radar.isConnected { return "None" }
-            if !radar.hasTarget { return displayMotion(radar.lastMotion) == "Lost" ? "None" : capitalize(radar.lastMotion) }
+            if !radar.hasTarget { return "None" }
             return capitalize(radar.lastMotion)
         }()
         let distanceLabel: String = {
@@ -201,10 +201,6 @@ final class SessionController: ObservableObject {
     private func capitalize(_ raw: String) -> String {
         guard let first = raw.first else { return "None" }
         return String(first).uppercased() + raw.dropFirst()
-    }
-
-    private func displayMotion(_ raw: String) -> String {
-        capitalize(raw)
     }
 
     private func fireApproachingAlert(distanceM: Double?) async {
