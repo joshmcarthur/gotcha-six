@@ -1,7 +1,8 @@
 //! Derive approaching / receding from distance change over a short window.
 //!
 //! Closing speed is the UART speed magnitude with the direction of the windowed
-//! distance change. Does not use UART speed sign. Does not fuse IMU.
+//! distance change. Does not use UART speed sign. Does not fuse IMU. A target
+//! must be absent for four frames before motion is Lost.
 
 use std::collections::VecDeque;
 
@@ -12,6 +13,10 @@ use serde::{Deserialize, Serialize};
 
 /// Samples required before emitting Approaching or Receding.
 const MOTION_WINDOW: usize = 3;
+/// Consecutive absent `$DFDMD` frames before motion becomes Lost.
+const LOST_HOLD_SAMPLES: usize = 4;
+/// Metres of windowed distance change below which we call Stationary.
+const STATIONARY_EPS_M: f32 = 0.15;
 
 /// Motion relative to the wearer (rear target).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -30,6 +35,7 @@ pub enum Motion {
 pub struct DetectionEngine {
     distances_m: VecDeque<f32>,
     prev_present: bool,
+    absent_count: usize,
     /// Meters of windowed distance change below which we call Stationary.
     stationary_eps_m: f32,
 }
@@ -39,7 +45,8 @@ impl Default for DetectionEngine {
         Self {
             distances_m: VecDeque::with_capacity(MOTION_WINDOW),
             prev_present: false,
-            stationary_eps_m: 0.05,
+            absent_count: 0,
+            stationary_eps_m: STATIONARY_EPS_M,
         }
     }
 }
@@ -52,6 +59,7 @@ impl DetectionEngine {
     pub fn reset(&mut self) {
         self.distances_m.clear();
         self.prev_present = false;
+        self.absent_count = 0;
     }
 
     /// Observe a tracked target update.
@@ -64,27 +72,38 @@ impl DetectionEngine {
     /// lost, or when the radar gave no speed.
     pub fn observe(&mut self, tracked: &TrackedTarget) -> (Motion, Option<f32>) {
         if !tracked.present {
-            let was = self.prev_present;
-            self.prev_present = false;
-            self.distances_m.clear();
-            return if was {
-                (Motion::Lost, None)
-            } else {
-                (Motion::Unknown, None)
-            };
+            return self.observe_absent();
         }
 
         let Some(dist) = tracked.distance_m else {
             self.prev_present = true;
+            self.absent_count = 0;
             return (Motion::Unknown, None);
         };
 
+        self.absent_count = 0;
         self.distances_m.push_back(dist);
         while self.distances_m.len() > MOTION_WINDOW {
             self.distances_m.pop_front();
         }
         self.prev_present = true;
         self.classify(tracked.speed_m_s)
+    }
+
+    /// Keep the distance window until Lost so a return mid-coast still
+    /// classifies against the last present samples.
+    fn observe_absent(&mut self) -> (Motion, Option<f32>) {
+        if !self.prev_present {
+            return (Motion::Unknown, None);
+        }
+        self.absent_count = self.absent_count.saturating_add(1);
+        if self.absent_count < LOST_HOLD_SAMPLES {
+            return (Motion::Stationary, Some(0.0));
+        }
+        self.prev_present = false;
+        self.absent_count = 0;
+        self.distances_m.clear();
+        (Motion::Lost, None)
     }
 
     fn classify(&self, speed_m_s: Option<f32>) -> (Motion, Option<f32>) {
@@ -145,6 +164,10 @@ mod tests {
         distance: f32,
     ) -> (Motion, Option<f32>) {
         det.observe(&tracker.update(&target(distance)))
+    }
+
+    fn observe_empty(det: &mut DetectionEngine, tracker: &mut Tracker) -> (Motion, Option<f32>) {
+        det.observe(&tracker.update(&empty()))
     }
 
     #[test]
@@ -215,12 +238,54 @@ mod tests {
     }
 
     #[test]
-    fn lost_after_target_gone() {
+    fn ten_cm_step_is_stationary() {
         let mut tracker = Tracker::new();
         let mut det = DetectionEngine::new();
-        let _ = det.observe(&tracker.update(&target(5.0)));
-        let (m, _) = det.observe(&tracker.update(&empty()));
-        assert_eq!(m, Motion::Lost);
+        let _ = observe_dist(&mut det, &mut tracker, 5.0);
+        let (m, closing) = observe_dist(&mut det, &mut tracker, 5.10);
+        assert_eq!(m, Motion::Stationary);
+        assert_eq!(closing, Some(0.0));
+    }
+
+    #[test]
+    fn lost_after_four_empty_frames() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_dist(&mut det, &mut tracker, 5.0);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Lost);
+    }
+
+    #[test]
+    fn one_empty_then_target_does_not_emit_lost() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let _ = observe_dist(&mut det, &mut tracker, 5.0);
+        assert_eq!(observe_empty(&mut det, &mut tracker).0, Motion::Stationary);
+        assert_ne!(observe_dist(&mut det, &mut tracker, 5.0).0, Motion::Lost);
+    }
+
+    #[test]
+    fn brief_drop_does_not_rearm_alert_gate() {
+        let mut tracker = Tracker::new();
+        let mut det = DetectionEngine::new();
+        let mut gate = AlertGate::new();
+        gate.set_session_on(true);
+
+        let (m1, _) = observe_dist(&mut det, &mut tracker, 12.0);
+        let (m2, _) = observe_dist(&mut det, &mut tracker, 11.0);
+        let (m3, _) = observe_dist(&mut det, &mut tracker, 10.0);
+        assert!(!gate.observe(OutputKind::Target, m1, Some(12.0), 0));
+        assert!(!gate.observe(OutputKind::Target, m2, Some(11.0), 100));
+        assert!(gate.observe(OutputKind::Target, m3, Some(10.0), 200));
+
+        let (empty_motion, _) = observe_empty(&mut det, &mut tracker);
+        assert!(!gate.observe(OutputKind::Target, empty_motion, None, 300));
+
+        let (m4, _) = observe_dist(&mut det, &mut tracker, 9.5);
+        assert!(!gate.observe(OutputKind::Target, m4, Some(9.5), 400));
     }
 
     #[test]

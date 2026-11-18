@@ -301,8 +301,9 @@ final class RadarLink: NSObject, ObservableObject {
                 lastMotion = out.motion
             }
             if out.kind == "target" {
-                hasTarget = true
-                if let d = out.distanceM {
+                let present = (out.count ?? 0) > 0 && out.distanceM != nil
+                hasTarget = present
+                if present, let d = out.distanceM {
                     lastDistanceM = Double(d)
                 }
                 sawTargetSinceConnect = true
