@@ -1,0 +1,4 @@
+{
+  "approaching_between_ms": [1000, 1000],
+  "never_approaching_before_ms": 1000
+}
